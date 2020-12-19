@@ -1,0 +1,20 @@
+/* linalg.h
+ *
+ * This serves as an extension to matrix.h and includes linear algebra
+ * routines for matrices and vectors using OpenBLAS and LAPACKE */
+#ifndef LINALG_H
+#define LINALG_H
+
+#include "matrix.h"
+
+void transpose (Matrix *m);
+void inverse (Matrix *m);
+Vector * linearSolve (Matrix *M, Vector *b);
+Vector * eigenValues (Matrix *m);
+void lq (Matrix *m);
+void lu (Matrix *m);
+void svd (Matrix *m);
+double vectorNorm (Vector *v);
+double matrixNorm (Matrix *m);
+
+#endif
