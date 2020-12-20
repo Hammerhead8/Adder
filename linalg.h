@@ -7,7 +7,8 @@
 
 #include "matrix.h"
 
-void transpose (Matrix *m);
+Matrix * transpose (Matrix *m);
+void vectorTranspose (Vector *v);
 void inverse (Matrix *m);
 Vector * linearSolve (Matrix *M, Vector *b);
 Vector * eigenValues (Matrix *m);
