@@ -3,11 +3,19 @@
 
 enum { DIMENSION_ERROR = -1 };
 
+enum
+VectorOrder
+{
+	ROW_VECTOR = -1,
+	COLUMN_VECTOR = 1
+};
+
 /* Vector type definition */
 typedef struct
 {
 	double *vect;
 	long int size;
+	int orient;
 } Vector;
 
 /* Matrix type definition */
@@ -19,8 +27,8 @@ typedef struct
 } Matrix;
 
 /* Vector IO functions */
-Vector * vectorInit (long int numElements, double *values);
-Vector * vectorInit2 (long int numElements);
+Vector * vectorInit (long int numElements, double *values, int orientation);
+Vector * vectorInit2 (long int numElements, int orientation);
 void deleteVector (Vector *v);
 void printVector (Vector *v);
 
