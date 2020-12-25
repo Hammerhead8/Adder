@@ -8,8 +8,7 @@
 #include "matrix.h"
 
 Matrix * transpose (Matrix *m);
-void vectorTranspose (Vector *v);
-void inverse (Matrix *m);
+Matrix * inverse (Matrix *m);
 Vector * linearSolve (Matrix *M, Vector *b);
 Vector * eigenValues (Matrix *m);
 Matrix * lq (Matrix *m);
@@ -17,5 +16,6 @@ Matrix * lu (Matrix *m);
 void svd (Matrix *m);
 double vectorNorm (Vector *v);
 double matrixNorm (Matrix *m);
+void vectorTranspose (Vector *v);
 
 #endif
