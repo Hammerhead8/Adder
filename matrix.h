@@ -1,45 +1,61 @@
 #ifndef MATRIX_H
 #define MATRIX_H
 
-enum { DIMENSION_ERROR = -1 };
+enum
+ERRORS
+{
+	DIMENSION_ERROR = -1,
+	INVALID_FILE = 1,
+	FILE_READ_ERROR = 2,
+	ARGUMENT_ERROR = 3,
+	SINGULAR_MATRIX = 4
+};
 
 enum
-VectorOrder
+VECTOR_ORDER
 {
 	ROW_VECTOR = -1,
 	COLUMN_VECTOR = 1
+};
+
+enum
+MATRIX_ORIENTATION
+{
+	ROW_MAJOR = 1,
+	COLUMN_MAJOR = 2
 };
 
 /* Vector type definition */
 typedef struct
 {
 	double *vect;
-	long int size;
-	int orient;
+	int size;
+	int orientation;
 } Vector;
 
 /* Matrix type definition */
 typedef struct
 {
 	double *mat;
-	long int rows;
-	long int columns;
+	int rows;
+	int columns;
+	int orientation;
 } Matrix;
 
 /* Vector IO functions */
-Vector * vectorInit (long int numElements, double *values, int orientation);
-Vector * vectorInit2 (long int numElements, int orientation);
+Vector * vectorInit (int orient, int numElements, double *values);
+Vector * vectorInit2 (int orient, int numElements);
 void deleteVector (Vector *v);
 void printVector (Vector *v);
 
 /* Vector setting functions */
 void vectorZeros (Vector *v);
 void vectorOnes (Vector *v);
-void randVector (Vector *v);
+int randVector (Vector *v);
 
 /* Matrix IO functions */
-Matrix * matrixInit (long int numRows, long int numColumns, double *values);
-Matrix *matrixInit2 (long int numRows, long int numcolumns);
+Matrix * matrixInit (int orient, int numRows, int numColumns, double *values);
+Matrix *matrixInit2 (int orient, int numRows, int numcolumns);
 void deleteMatrix (Matrix *m);
 void printMatrix (Matrix *m);
 
@@ -47,6 +63,6 @@ void printMatrix (Matrix *m);
 void eye (Matrix *m, long int n);
 void matrixZeros (Matrix *m);
 void matrixOnes (Matrix *m);
-void randMatrix (Matrix *m);
+int randMatrix (Matrix *m);
 
 #endif
