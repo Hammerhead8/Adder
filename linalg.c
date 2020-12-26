@@ -217,6 +217,71 @@ linearSolve (Matrix *M, Vector *b)
 	/* Calculate the eigenvalues */
 /*	err = LAPACKE_dgeev ('V', 'N', n, M->mat, wr->vect, wi->vect, */
 
+/* Calculate the QR factorization of a matrix */
+Matrix *
+qr (Matrix *M)
+{
+	Matrix *res;
+	double *tau;
+	lapack_int err;
+	lapack_int m, n;
+
+	m = M->rows;
+	n = M->columns;
+
+	/* Copy the values in M to res */
+	res = matrixInit (M->orientation, M->rows, M->columns, M->mat);
+	if (res == NULL) {
+		return NULL;
+	}
+
+	/* Allocate space for tau */
+	if (m < n) {
+		tau = malloc (m * sizeof (double));
+		if (tau == NULL) {
+			deleteMatrix (res);
+			return NULL;
+		}
+	}
+	else {
+		tau = malloc (n * sizeof (double));
+		if (tau == NULL) {
+			deleteMatrix (res);
+			return NULL;
+		}
+	}
+
+	/* Check if the matrix is row major */
+	if (M->orientation == ROW_MAJOR) {
+		err = LAPACKE_dgeqr2 (LAPACK_ROW_MAJOR, m, n, res->mat, n, tau);
+
+		if (err == 0) {
+			free (tau);
+			return res;
+		}
+		else {
+			free (tau);
+			deleteMatrix (res);
+			return NULL;
+		}
+	}
+
+	/* Otherwise the matrix is column major */
+	else {
+		err = LAPACKE_dgeqr2 (LAPACK_COL_MAJOR, m, n, res->mat, m, tau);
+
+		if (err == 0) {
+			free (tau);
+			return res;
+		}
+		else {
+			free (tau);
+			deleteMatrix (res);
+			return NULL;
+		}
+	}
+}
+
 /* Calculate LQ factorization of a matrix */
 Matrix *
 lq (Matrix *M)
