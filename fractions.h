@@ -27,6 +27,7 @@ void invert (Fraction *f);
 void power (Fraction *f, double exponent);
 
 /* Other functions */
+void simplify (Fraction *f);
 long int calcGCD (long int a, long int b);
 
 #endif
