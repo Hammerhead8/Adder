@@ -131,6 +131,12 @@ linearSolve (Matrix *M, Vector *b)
 	lapack_int err;
 	int i;
 
+	/* Check that the right-side vector (b) is a column vector */
+	if (b->orientation == ROW_VECTOR) {
+		fprintf (stderr, "ERROR:  b vector must be a column vector.\n");
+		return NULL;
+	}
+
 	/* If the dimensions of M and b match and M is square then copy the
 	 * values of b into res. */
 	if ((M->rows == M->columns) && (M->rows == b->size) && (b->orientation == COLUMN_VECTOR)) {
@@ -196,26 +202,40 @@ linearSolve (Matrix *M, Vector *b)
 /*eigenValues (Matrix *M)*/
 /*{*/
 /*	Vector *res;*/
-/*	Vector *wr;*/
-/*	Vector *wi;*/
+/*	double *wr;*/
+/*	double *wi;*/
+/*	double *vl;*/
+/*	double *vr;*/
 /*	long int n;*/
 /*	lapack_int err;*/
 
-	/* Check if the matrix is square */
+/*	 Check if the matrix is square */
 /*	if (M->rows != M->columns) {*/
 /*		fprintf (stderr, "Eigenvalue error:  Matrix is not square.\n");*/
 /*		return NULL;*/
 /*	}*/
 
-	/* Since the matrix is square then rows == columns */
+/*	 Since the matrix is square then rows == columns */
 /*	n = M->rows;*/
 
 /*	res = vectorInit2 (n, COLUMN_VECTOR);*/
-/*	wr = vectorInit2 (n, COLUMN_VECTOR);*/
-/*	wi = vectorInit2 (n, COLUMN_VECTOR);*/
+/*	wr = malloc (n * sizeof (double));*/
+/*	if (wr == NULL) {*/
+/*		deleteVector (res);*/
+/*		return NULL;*/
+/*	}*/
 
-	/* Calculate the eigenvalues */
-/*	err = LAPACKE_dgeev ('V', 'N', n, M->mat, wr->vect, wi->vect, */
+/*	wi = malloc (n * sizeof (double));*/
+/*	if (wi == NULL) {*/
+/*		deleteVector (res);*/
+/*		free (wr);*/
+/*		return NULL;*/
+/*	}*/
+
+	/* If the matrix is row major */
+/*	if (M->orientation == ROW_MAJOR) {*/
+		/* Calculate the eigenvalues */
+/*		err = LAPACKE_dgeev (LAPACK_ROW_MAJOR, 'N', 'V', n, M->mat, n, wr, wi, */
 
 /* Calculate the QR factorization of a matrix */
 Matrix *
@@ -385,6 +405,7 @@ lu (Matrix *M)
 
 /* Singular value decomposition calculation omitted for now */
 
+
 /* Calculate the norm of a vector */
 double
 vectorNorm (Vector *v)
@@ -403,27 +424,34 @@ vectorNorm (Vector *v)
 double
 matrixNorm (Matrix *M)
 {
-	/* norm (M) = trace (M' * M) */
-	Matrix *res;
-	blasint m;
-	blasint n;
-	blasint k;
-	double trace = 0;
-	int i;
-
-	res = M;
+	/* norm (M) = sqrt (trace (M' * M)) */
+	double res;
+	lapack_int m;
+	lapack_int n;
 
 	m = M->rows;
 	n = M->columns;
-	k = M->rows;
 
-	/* Multiply the matrix with its transpose using cblas_dgemm */
-	cblas_dgemm (CblasRowMajor, CblasTrans, CblasNoTrans, m, n, k, 1.0, M->mat, k, M->mat, n, 0.0, res->mat, n);
-
-	/* Calculate the trace of the product matrix */
-	for (i = 0; i < m; i++) {
-		trace += res->mat[i * m + i];
+	/* If the matrix is row major */
+	if (M->orientation == ROW_MAJOR) {
+		/* Calculate the frobinius norm */
+		res = LAPACKE_dlange (LAPACK_ROW_MAJOR, 'F', m, n, M->mat, n);
 	}
 
-	return sqrt (trace);
+	/* Otherwise the matrix is column major */
+	else {
+		res = LAPACKE_dlange (LAPACK_COL_MAJOR, 'F', m, n, M->mat, m);
+	}
+
+	return res;
+
+	/* Multiply the matrix with its transpose using cblas_dgemm */
+/*	cblas_dgemm (CblasRowMajor, CblasTrans, CblasNoTrans, m, n, k, 1.0, M->mat, k, M->mat, n, 0.0, res->mat, n);*/
+
+	/* Calculate the trace of the product matrix */
+/*	for (i = 0; i < m; i++) {*/
+/*		trace += res->mat[i * m + i];*/
+/*	}*/
+
+/*	return sqrt (trace);*/
 }
