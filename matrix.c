@@ -108,7 +108,12 @@ printVector (Vector *v)
 	}
 	else {
 		for (i = 0; i < v->size; i++) {
-			printf ("%lf\n", v->vect[i]);
+			if (v->vect[i] < 0) {
+				printf ("%lf\n", v->vect[i]);
+			}
+			else {
+				printf (" %lf\n", v->vect[i]);
+			}
 		}
 
 		printf ("\n");
