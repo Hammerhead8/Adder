@@ -420,7 +420,6 @@ vectorNorm (Vector *v)
 }
 
 /* Calculate the norm of a matrix */
-/* TODO:  use dlange LAPACK function */
 double
 matrixNorm (Matrix *M)
 {
