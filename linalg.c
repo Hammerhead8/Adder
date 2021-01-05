@@ -198,44 +198,112 @@ linearSolve (Matrix *M, Vector *b)
 }
 
 /* Calculate the eigenvalues of the matrix */
-/*Vector **/
-/*eigenValues (Matrix *M)*/
-/*{*/
-/*	Vector *res;*/
-/*	double *wr;*/
-/*	double *wi;*/
-/*	double *vl;*/
-/*	double *vr;*/
-/*	long int n;*/
-/*	lapack_int err;*/
+Vector *
+eigenValues (Matrix *M)
+{
+	Vector *res;
+	double *wr;
+	double *wi;
+	double *vl;
+	double *vr;
+	int i;
+	lapack_int n;
+	lapack_int err;
 
-/*	 Check if the matrix is square */
-/*	if (M->rows != M->columns) {*/
-/*		fprintf (stderr, "Eigenvalue error:  Matrix is not square.\n");*/
-/*		return NULL;*/
-/*	}*/
+	/* Check if the matrix is square */
+	if (M->rows != M->columns) {
+		fprintf (stderr, "Eigenvalue error:  Matrix is not square.\n");
+		return NULL;
+	}
 
-/*	 Since the matrix is square then rows == columns */
-/*	n = M->rows;*/
+	/* Since the matrix is square then rows == columns */
+	n = M->rows;
 
-/*	res = vectorInit2 (n, COLUMN_VECTOR);*/
-/*	wr = malloc (n * sizeof (double));*/
-/*	if (wr == NULL) {*/
-/*		deleteVector (res);*/
-/*		return NULL;*/
-/*	}*/
+	res = vectorInit2 (COLUMN_VECTOR, n);
+	wr = malloc (n * sizeof (double));
+	if (wr == NULL) {
+		deleteVector (res);
+		return NULL;
+	}
 
-/*	wi = malloc (n * sizeof (double));*/
-/*	if (wi == NULL) {*/
+	wi = malloc (n * sizeof (double));
+	if (wi == NULL) {
+		deleteVector (res);
+		free (wr);
+		return NULL;
+	}
+
+/*	vl = malloc (n * sizeof (double));*/
+/*	if (vl == NULL) {*/
 /*		deleteVector (res);*/
 /*		free (wr);*/
+/*		free (wi);*/
 /*		return NULL;*/
 /*	}*/
 
-	/* If the matrix is row major */
-/*	if (M->orientation == ROW_MAJOR) {*/
+/*	vr = malloc (n * sizeof (double));*/
+/*	if (vr == NULL) {*/
+/*		deleteVector (res);*/
+/*		free (wr);*/
+/*		free (wi);*/
+/*		free (vl);*/
+/*		return NULL;*/
+/*	}*/
+
+/*	 If the matrix is row major */
+	if (M->orientation == ROW_MAJOR) {
 		/* Calculate the eigenvalues */
-/*		err = LAPACKE_dgeev (LAPACK_ROW_MAJOR, 'N', 'V', n, M->mat, n, wr, wi, */
+		err = LAPACKE_dgeev (LAPACK_ROW_MAJOR, 'N', 'N', n, M->mat, n, res->vect, wi, vl, n, vr, n);
+
+		/* Check for errors */
+		if (err == 0) {
+			free (wr);
+			free (wi);
+			return res;
+		}
+		else if (err < 0) {
+			fprintf (stderr, "Invalid arguments.\n");
+			deleteVector (res);
+			free (wr);
+			free (wi);
+			return NULL;
+		}
+		else {
+			fprintf (stderr, "Failed to calculate the eigenvalues.\n");
+			deleteVector (res);
+			free (wr);
+			free (wi);
+			return NULL;
+		}
+	}
+
+	/* Otherwise the matrix is column major */
+	else {
+		/* Calculate the eigenvalues */
+		err = LAPACKE_dgeev (LAPACK_COL_MAJOR, 'N', 'N', n, M->mat, n, res->vect, wi, vl, n, vr, n);
+
+		/* Check for errors */
+		if (err == 0) {
+			free (wr);
+			free (wi);
+			return res;
+		}
+		else if (err < 0) {
+			fprintf (stderr, "Invalid arguments.\n");
+			deleteVector (res);
+			free (wr);
+			free (wi);
+			return NULL;
+		}
+		else {
+			fprintf (stderr, "Failed to calculate the eigenvalues.\n");
+			deleteVector (res);
+			free (wr);
+			free (wi);
+			return NULL;
+		}
+	}
+}
 
 /* Calculate the QR factorization of a matrix */
 Matrix *
