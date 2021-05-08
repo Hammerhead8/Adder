@@ -41,10 +41,9 @@ Adder is still under development and is incomplete, but the currently supported 
 	* Monte Carlo integration
 * Optimization
 	* Two-dimensional search methods
+	 * Constrained search methods
 * Support for complex vectors and matrices
 * Complex linear algebra
-* Fractions
-	* Enter fraction as a decimal
 
 Currently the linear algebra functions only support real-valued matrices and
 use only the general matrix routines. It is planned to eventually support
