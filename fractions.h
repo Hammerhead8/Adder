@@ -6,28 +6,28 @@ typedef struct
 {
 	double numer;
 	double denom;
-} Fraction;
+} adder_fraction;
 
 /* IO functions */
-Fraction * newFraction (Fraction *f, long int numerator, long int denominator);
-void deleteFraction (Fraction *f);
-void print (Fraction *f);
-void setNumerator (Fraction *f, long int numerator);
-void setDenominator (Fraction *f, long int denominator);
-long int getNumerator (Fraction *f);
-long int getDenominator (Fraction *f);
-double getDecimal (Fraction *f);
+Fraction * newFraction (adder_fraction *f, long int numerator, long int denominator);
+void deleteFraction (adder_fraction *f);
+void print (adder_fraction *f);
+void setNumerator (adder_fraction *f, long int numerator);
+void setDenominator (adder_fraction *f, long int denominator);
+long int getNumerator (adder_fraction *f);
+long int getDenominator (adder_fraction *f);
+double getDecimal (adder_fraction *f);
 
 /* Arithmetic functions */
-void addFractions (Fraction *sum, Fraction *f1, Fraction *f2);
-void subFractions (Fraction *diff, Fraction *f1, Fraction *f2);
-void multFractions (Fraction *prod, Fraction *f1, Fraction *f2);
-void divFractions (Fraction *quot, Fraction *f1, Fraction *f2);
-void invert (Fraction *f);
-void power (Fraction *f, double exponent);
+void addFractions (adder_fraction *sum, adder_fraction *f1, adder_fraction *f2);
+void subFractions (adder_fraction *diff, adder_fraction *f1, adder_fraction *f2);
+void multFractions (adder_fraction *prod, adder_fraction *f1, adder_fraction *f2);
+void divFractions (adder_fraction *quot, adder_fraction *f1, adder_fraction *f2);
+void invert (adder_fraction *f);
+void power (adder_fraction *f, double exponent);
 
 /* Other functions */
-void simplify (Fraction *f);
+void simplify (adder_fraction *f);
 long int calcGCD (long int a, long int b);
 
 #endif
