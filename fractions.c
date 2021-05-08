@@ -7,9 +7,9 @@
 /* IO functions */
 /* Allocate the memory for a new fraction */
 void
-newFraction (Fraction *f, long int numerator, long int denominator)
+newadder_fraction (adder_fraction *f, long int numerator, long int denominator)
 {
-	f = malloc (sizeof (Fraction));
+	f = malloc (sizeof (adder_fraction));
 	if (f == NULL) {
 		return f;
 	}
@@ -27,49 +27,49 @@ newFraction (Fraction *f, long int numerator, long int denominator)
 
 /* Deallocate the memory for the fraction */
 void
-deleteFraction (Fraction *f)
+deleteadder_fraction (adder_fraction *f)
 {
 	free (f);
 }
 
 /* Print the fraction */
 void
-print (Fraction *f)
+print (adder_fraction *f)
 {
 	printf ("%ld/%ld\n", f->numer, f->denom);
 }
 
 /* Set the numerator of the fraction to the specified value */
 void
-setNumerator (Fraction *f, long int numerator)
+setNumerator (adder_fraction *f, long int numerator)
 {
 	f->numer = numerator;
 }
 
 /* Set the denominator of the fraction to the specified value */
 void
-setDenominator (Fraction *f, long int denominator)
+setDenominator (adder_fraction *f, long int denominator)
 {
 	f->denom = denominator;
 }
 
 /* Return the value of the numerator */
 long int
-getNumerator (Fraction *f)
+getNumerator (adder_fraction *f)
 {
 	return f->numer;
 }
 
 /* Return the value of the denominator */
 long int
-getDenominator (Fraction *f)
+getDenominator (adder_fraction *f)
 {
 	return f->denom;
 }
 
 /* Return the decimal value of the fraction in double precision */
 double
-getDecimal (Fraction *f)
+getDecimal (adder_fraction *f)
 {
 	double res;
 
@@ -80,7 +80,7 @@ getDecimal (Fraction *f)
 /* Arithmetic functions */
 /* Add two fractions */
 void
-addFractions (Fraction *sum, Fraction *f1, Fraction *f2)
+addadder_fractions (adder_fraction *sum, adder_fraction *f1, adder_fraction *f2)
 {
 	long int N1, N2;
 	long int numerator1, numerator2;
@@ -104,7 +104,7 @@ addFractions (Fraction *sum, Fraction *f1, Fraction *f2)
 
 /* Subtract two fractions */
 void
-subFractions (Fraction *diff, Fraction *f1, Fraction *f2)
+subadder_fractions (adder_fraction *diff, adder_fraction *f1, adder_fraction *f2)
 {
 	long int N1, N2;
 	long int numerator1, numerator2;
@@ -128,7 +128,7 @@ subFractions (Fraction *diff, Fraction *f1, Fraction *f2)
 
 /* Multiply two fractions */
 void
-multFractions (Fraction *prod, Fraction *f1, Fraction *f2)
+multadder_fractions (adder_fraction *prod, adder_fraction *f1, adder_fraction *f2)
 {
 	prod->numer = f1->numer * f2->numer;
 	prod->denom = f1->denom * f2->denom;
@@ -136,7 +136,7 @@ multFractions (Fraction *prod, Fraction *f1, Fraction *f2)
 
 /* Divide two fractions */
 void
-divFractions (Fraction *quot, Fraction *f1, Fraction *f2)
+divadder_fractions (adder_fraction *quot, adder_fraction *f1, adder_fraction *f2)
 {
 	quot->numer = f1->numer * f2->denom;
 	quot->denom = f1->denom * f2->numer;
@@ -144,7 +144,7 @@ divFractions (Fraction *quot, Fraction *f1, Fraction *f2)
 
 /* Calculate the reciprocal of the fraction */
 void
-invert (Fraction *f)
+invert (adder_fraction *f)
 {
 	long int temp;
 
@@ -155,7 +155,7 @@ invert (Fraction *f)
 
 /* Raise the fraction to an exponent */
 void
-power (Fraction *f, long int exponent)
+power (adder_fraction *f, long int exponent)
 {
 	f->numer = pow (f->numer, (double)exponent);
 	f->denom = pow (f->denom, (double)exponent);
@@ -164,7 +164,7 @@ power (Fraction *f, long int exponent)
 /* Other functions */
 /* Simplify the fraction */
 void
-simplify (Fraction *f)
+simplify (adder_fraction *f)
 {
 	long int gcd;
 
