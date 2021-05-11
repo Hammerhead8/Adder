@@ -4,12 +4,12 @@
 /* Fraction type definition */
 typedef struct
 {
-	double numer;
-	double denom;
+	long int numer;
+	long int  denom;
 } adder_fraction;
 
 /* IO functions */
-Fraction * newFraction (adder_fraction *f, long int numerator, long int denominator);
+adder_fraction * newFraction (long int numerator, long int denominator);
 void deleteFraction (adder_fraction *f);
 void print (adder_fraction *f);
 void setNumerator (adder_fraction *f, long int numerator);
