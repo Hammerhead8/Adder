@@ -6,9 +6,10 @@
 
 /* IO functions */
 /* Allocate the memory for a new fraction */
-void
-newadder_fraction (adder_fraction *f, long int numerator, long int denominator)
+adder_fraction *
+newFraction (long int numerator, long int denominator)
 {
+	adder_fraction f;
 	f = malloc (sizeof (adder_fraction));
 	if (f == NULL) {
 		return f;
