@@ -44,6 +44,7 @@ Adder is still under development and is incomplete, but the currently supported 
 	 * Constrained search methods
 * Support for complex vectors and matrices
 * Complex linear algebra
+* Random number generation
 
 Currently the linear algebra functions only support real-valued matrices and
 use only the general matrix routines. It is planned to eventually support
