@@ -35,6 +35,8 @@ Adder is still under development and is incomplete, but the currently supported 
 <!--interface for LAPACK.-->
 
 # Planned features
+* Fractions
+	* Create fraction from an arbitrary decimal
 * Numerical differentiation
 * Numerical integration
 	* Simpson's Rule
