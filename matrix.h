@@ -59,6 +59,9 @@ Matrix *matrixInit2 (int orient, int numRows, int numcolumns);
 void deleteMatrix (Matrix *m);
 void printMatrix (Matrix *m);
 
+/* Matrix arithmetic functions */
+Vector * mvMultiply (Matrix *M, Vector *v);
+
 /* Matrix setting functions */
 void eye (Matrix *m, long int n);
 void matrixZeros (Matrix *m);
