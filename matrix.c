@@ -304,6 +304,44 @@ printMatrix (Matrix *m)
 	printf ("\n");
 }
 
+/* Multiply a matrix and with a vector */
+Vector *
+mvMultiply (Matrix *M, Vector *v)
+{
+	Vector *res;
+
+	/* Check that the dimensions of M and v are valid for multiplication */
+	if (v->orientation == COLUMN_VECTOR) {
+		if (M->columns == v->numElements) {
+			res = vectorInit2 (COLUMN_VECTOR, M->rows);
+		}
+
+		else {
+			fprintf (stderr, "ERROR:  Dimension mismatch\n");
+			return NULL;
+		}
+	}
+
+	else {
+		fprintf (stderr, "Vector needs to be a column vector for multiplication\n");
+		return NULL;
+	}
+
+	/* If the dimensions are valid then we can perform the multiplication */
+
+	/* Check if the matrix is row major or column major */
+	if (M->orientation == ROW_MAJOR) {
+		res = cblas_dgemv (CblasRowMajor, CblasNoTrans, M->rows, M->columns, 1.0, M->mat, M->rows, v->vect, 1, 0, res->vect, 1);
+		return res;
+	}
+
+	/* Otherwise the matrix must be column major */
+	else {
+		res = cblas_dgemv (CblasColMajor, CblasNoTrans, M->rows, M->columns, 1.0, M->mat, M->columns, v->vect, 1, 0, res->vect, 1);
+		return res;
+	}
+}
+
 /* Set the matrix to a zero matrix */
 void
 matrixZeros (Matrix *m)
