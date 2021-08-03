@@ -2,6 +2,7 @@
  * Function definitions for matrix.h */
 #include <stdio.h>
 #include <stdlib.h>
+#include <cblas.h>
 #include "matrix.h"
 
 /* Vector IO functions */
@@ -312,7 +313,7 @@ mvMultiply (Matrix *M, Vector *v)
 
 	/* Check that the dimensions of M and v are valid for multiplication */
 	if (v->orientation == COLUMN_VECTOR) {
-		if (M->columns == v->numElements) {
+		if (M->columns == v->size) {
 			res = vectorInit2 (COLUMN_VECTOR, M->rows);
 		}
 
@@ -331,13 +332,13 @@ mvMultiply (Matrix *M, Vector *v)
 
 	/* Check if the matrix is row major or column major */
 	if (M->orientation == ROW_MAJOR) {
-		res = cblas_dgemv (CblasRowMajor, CblasNoTrans, M->rows, M->columns, 1.0, M->mat, M->rows, v->vect, 1, 0, res->vect, 1);
+		cblas_dgemv (CblasRowMajor, CblasNoTrans, M->rows, M->columns, 1.0, M->mat, M->columns, v->vect, 1, 0, res->vect, 1);
 		return res;
 	}
 
 	/* Otherwise the matrix must be column major */
 	else {
-		res = cblas_dgemv (CblasColMajor, CblasNoTrans, M->rows, M->columns, 1.0, M->mat, M->columns, v->vect, 1, 0, res->vect, 1);
+		cblas_dgemv (CblasColMajor, CblasNoTrans, M->rows, M->columns, 1.0, M->mat, M->rows, v->vect, 1, 0, res->vect, 1);
 		return res;
 	}
 }
