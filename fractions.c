@@ -81,7 +81,7 @@ getDecimal (adder_fraction *f)
 /* Arithmetic functions */
 /* Add two fractions */
 void
-addadder_fractions (adder_fraction *sum, adder_fraction *f1, adder_fraction *f2)
+addFractions (adder_fraction *sum, adder_fraction *f1, adder_fraction *f2)
 {
 	long int N1, N2;
 	long int numerator1, numerator2;
@@ -105,7 +105,7 @@ addadder_fractions (adder_fraction *sum, adder_fraction *f1, adder_fraction *f2)
 
 /* Subtract two fractions */
 void
-subadder_fractions (adder_fraction *diff, adder_fraction *f1, adder_fraction *f2)
+subFractions (adder_fraction *diff, adder_fraction *f1, adder_fraction *f2)
 {
 	long int N1, N2;
 	long int numerator1, numerator2;
@@ -129,7 +129,7 @@ subadder_fractions (adder_fraction *diff, adder_fraction *f1, adder_fraction *f2
 
 /* Multiply two fractions */
 void
-multadder_fractions (adder_fraction *prod, adder_fraction *f1, adder_fraction *f2)
+multFractions (adder_fraction *prod, adder_fraction *f1, adder_fraction *f2)
 {
 	prod->numer = f1->numer * f2->numer;
 	prod->denom = f1->denom * f2->denom;
@@ -137,7 +137,7 @@ multadder_fractions (adder_fraction *prod, adder_fraction *f1, adder_fraction *f
 
 /* Divide two fractions */
 void
-divadder_fractions (adder_fraction *quot, adder_fraction *f1, adder_fraction *f2)
+divFractions (adder_fraction *quot, adder_fraction *f1, adder_fraction *f2)
 {
 	quot->numer = f1->numer * f2->denom;
 	quot->denom = f1->denom * f2->numer;
