@@ -23,8 +23,8 @@ void addFractions (adder_fraction *sum, adder_fraction *f1, adder_fraction *f2);
 void subFractions (adder_fraction *diff, adder_fraction *f1, adder_fraction *f2);
 void multFractions (adder_fraction *prod, adder_fraction *f1, adder_fraction *f2);
 void divFractions (adder_fraction *quot, adder_fraction *f1, adder_fraction *f2);
-void invert (adder_fraction *f);
-void power (adder_fraction *f, double exponent);
+void fractionInvert (adder_fraction *f);
+void fractionPower (adder_fraction *f, double exponent);
 
 /* Other functions */
 void simplify (adder_fraction *f);
