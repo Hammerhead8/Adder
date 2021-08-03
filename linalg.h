@@ -13,6 +13,7 @@ Matrix * inverse (Matrix *m);
 
 /* Equation solving */
 Vector * linearSolve (Matrix *M, Vector *b);
+Vector * odLinearSolve (Matrix *M, Vector *b);
 
 /* Eigenvalues */
 Vector * eigenValues (Matrix *m);
