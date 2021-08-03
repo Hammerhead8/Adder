@@ -21,7 +21,7 @@ transpose (Matrix *m)
 	numRows = m->rows;
 	numColumns = m->columns;
 
-	
+	/* Create a new matrix */
 	res = matrixInit2 (m->orientation, numColumns, numRows);
 
 	for (i = 0; i < numRows; i++) {
@@ -192,6 +192,57 @@ linearSolve (Matrix *M, Vector *b)
 		else {
 			fprintf (stderr, "Factorization creates singular matrix.\n");
 			deleteVector (res);
+			return NULL;
+		}
+	}
+}
+
+/* Solve an overdetermined linear system of equations */
+Vector *
+odLinearSolve (Matrix *A, Vector *b)
+{
+	int err;
+	Vector *res;
+
+	/* Create a result matrix to prevent overwriting b */
+	res = b;
+
+	/* If the matrix is row major */
+	if (A->orientation == ROW_MAJOR) {
+		err = LAPACKE_dgels (LAPACK_ROW_MAJOR, 'N', A->rows, A->columns, 1, A->mat, A->columns, res->vect, 1);
+
+		/* If no errors occured then return the solution vector */
+		if (err == 0 ) {
+			return b;
+		}
+
+		else if (err < 0) {
+			fprintf (stderr, "Argument %d is invalid.\n", -1 * err);
+			return NULL;
+		}
+
+		else {
+			fprintf (stderr, "Solution could not be computed\n");
+			return NULL;
+		}
+	}
+
+	else {
+		err = LAPACKE_dgels (LAPACK_COL_MAJOR, 'N', A->rows, A->columns, 1, A->mat, A->rows, res->vect, 1);
+
+
+		/* If now errors occured then return the solution vector */
+		if (err == 0) {
+			return b;
+		}
+
+		else if (err < 0) {
+			fprintf (stderr, "Argument %d is invalid.\n", -1 * err);
+			return NULL;
+		}
+
+		else {
+			fprintf (stderr, "Solution could not be computed\n");
 			return NULL;
 		}
 	}
