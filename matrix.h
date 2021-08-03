@@ -32,7 +32,7 @@ typedef struct
 	double *vect;
 	int size;
 	int orientation;
-} Vector;
+} adder_vector;
 
 /* Matrix type definition */
 typedef struct
@@ -41,32 +41,32 @@ typedef struct
 	int rows;
 	int columns;
 	int orientation;
-} Matrix;
+} adder_matrix;
 
 /* Vector IO functions */
-Vector * vectorInit (int orient, int numElements, double *values);
-Vector * vectorInit2 (int orient, int numElements);
-void deleteVector (Vector *v);
-void printVector (Vector *v);
+adder_vector * vectorInit (int orient, int numElements, double *values);
+adder_vector * vectorInit2 (int orient, int numElements);
+void deleteVector (adder_vector *v);
+void printVector (adder_vector *v);
 
 /* Vector setting functions */
-void vectorZeros (Vector *v);
-void vectorOnes (Vector *v);
-int randVector (Vector *v);
+void vectorZeros (adder_vector *v);
+void vectorOnes (adder_vector *v);
+int randVector (adder_vector *v);
 
 /* Matrix IO functions */
-Matrix * matrixInit (int orient, int numRows, int numColumns, double *values);
-Matrix *matrixInit2 (int orient, int numRows, int numcolumns);
-void deleteMatrix (Matrix *m);
-void printMatrix (Matrix *m);
+adder_matrix * matrixInit (int orient, int numRows, int numColumns, double *values);
+adder_matrix *matrixInit2 (int orient, int numRows, int numcolumns);
+void deleteMatrix (adder_matrix *m);
+void printMatrix (adder_matrix *m);
 
 /* Matrix arithmetic functions */
-Vector * mvMultiply (Matrix *M, Vector *v);
+adder_vector * mvMultiply (adder_matrix *M, adder_vector *v);
 
 /* Matrix setting functions */
-void eye (Matrix *m, long int n);
-void matrixZeros (Matrix *m);
-void matrixOnes (Matrix *m);
-int randMatrix (Matrix *m);
+void eye (adder_matrix *m, long int n);
+void matrixZeros (adder_matrix *m);
+void matrixOnes (adder_matrix *m);
+int randMatrix (adder_matrix *m);
 
 #endif

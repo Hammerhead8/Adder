@@ -8,27 +8,27 @@
 #include "matrix.h"
 
 /* Extra matrix functions */
-Matrix * transpose (Matrix *m);
-Matrix * inverse (Matrix *m);
+adder_matrix * transpose (adder_matrix *m);
+adder_matrix * inverse (adder_matrix *m);
 
 /* Equation solving */
-Vector * linearSolve (Matrix *M, Vector *b);
-Vector * odLinearSolve (Matrix *M, Vector *b);
+adder_vector * linearSolve (adder_matrix *M, adder_vector *b);
+adder_vector * odLinearSolve (adder_matrix *M, adder_vector *b);
 
 /* Eigenvalues */
-Vector * eigenValues (Matrix *m);
+adder_vector * eigenValues (adder_matrix *m);
 
 /* Matrix factorizations */
-Matrix * qr (Matrix *m);
-Matrix * lq (Matrix *m);
-Matrix * lu (Matrix *m);
+adder_matrix * qr (adder_matrix *m);
+adder_matrix * lq (adder_matrix *m);
+adder_matrix * lu (adder_matrix *m);
 
 /* Singular value decomposition */
-void svd (Matrix *m);
+void svd (adder_matrix *m);
 
 /* Norms */
-double vectorNorm (Vector *v);
-double matrixNorm (Matrix *m);
-void vectorTranspose (Vector *v);
+double vectorNorm (adder_vector *v);
+double matrixNorm (adder_matrix *m);
+void vectorTranspose (adder_vector *v);
 
 #endif

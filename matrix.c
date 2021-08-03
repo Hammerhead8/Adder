@@ -7,14 +7,14 @@
 
 /* Vector IO functions */
 /* Create a new vector and set its values */
-Vector *
+adder_vector *
 vectorInit (int orient, int numElements, double *values)
 {
-	Vector *v;
+	adder_vector *v;
 	int i;
 
 	/* Allocate the vector in memory */
-	v = malloc (sizeof (Vector));
+	v = malloc (sizeof (adder_vector));
 	if (v == NULL) {
 		return NULL;
 	}
@@ -47,14 +47,14 @@ vectorInit (int orient, int numElements, double *values)
 }
 
 /* Create a new vector and set its values to zero */
-Vector *
+adder_vector *
 vectorInit2 (int orient, int numElements)
 {
-	Vector *v;
+	adder_vector *v;
 	int i;
 
 	/* Allocate the vector in memory */
-	v = malloc (sizeof (Vector));
+	v = malloc (sizeof (adder_vector));
 	if (v == NULL) {
 		return NULL;
 	}
@@ -76,7 +76,7 @@ vectorInit2 (int orient, int numElements)
 /* Set the values of a vector
  * No error checking is done so the size of VALUES must match the size of v */
 void
-setVector (Vector *v, double *values)
+setVector (adder_vector *v, double *values)
 {
 	int i;
 
@@ -87,7 +87,7 @@ setVector (Vector *v, double *values)
 
 /* Delete a vector */
 void
-deleteVector (Vector *v)
+deleteVector (adder_vector *v)
 {
 	free (v->vect);
 	free (v);
@@ -95,7 +95,7 @@ deleteVector (Vector *v)
 
 /* Print a vector */
 void
-printVector (Vector *v)
+printVector (adder_vector *v)
 {
 	int i;
 
@@ -124,7 +124,7 @@ printVector (Vector *v)
 /* Vector setting functions */
 /* Set an existing vector to be a zero vector */
 void
-vectorZeros (Vector *v)
+vectorZeros (adder_vector *v)
 {
 	int i;
 
@@ -135,7 +135,7 @@ vectorZeros (Vector *v)
 
 /* Set an existing vector to be all ones */
 void
-vectorOnes (Vector *v)
+vectorOnes (adder_vector *v)
 {
 	int i;
 
@@ -146,7 +146,7 @@ vectorOnes (Vector *v)
 
 /* Set an existing vector to random values */
 int
-randVector (Vector *v)
+randVector (adder_vector *v)
 {
 	long int seed;
 	size_t err;
@@ -186,14 +186,14 @@ randVector (Vector *v)
 *********************/
 
 /* Create a matrix and set its values */
-Matrix *
+adder_matrix *
 matrixInit (int orient, int numRows, int numColumns, double *values)
 {
-	Matrix *m;
+	adder_matrix *m;
 	int i, j;
 
 	/* Allocate memory for the matrix */
-	m = malloc (sizeof (Matrix));
+	m = malloc (sizeof (adder_matrix));
 	if (m == NULL) {
 		return NULL;
 	}
@@ -245,13 +245,13 @@ matrixInit (int orient, int numRows, int numColumns, double *values)
 }
 
 /* Create a matrix without settings its values */
-Matrix *
+adder_matrix *
 matrixInit2 (int orient, int numRows, int numColumns)
 {
-	Matrix *m;
+	adder_matrix *m;
 	int i, j;
 
-	m = malloc (sizeof (Matrix));
+	m = malloc (sizeof (adder_matrix));
 	if (m == NULL) {
 		return NULL;
 	}
@@ -282,7 +282,7 @@ matrixInit2 (int orient, int numRows, int numColumns)
 
 /* Delete the matrix */
 void
-deleteMatrix (Matrix *m)
+deleteMatrix (adder_matrix *m)
 {
 	free (m->mat);
 	free (m);
@@ -290,7 +290,7 @@ deleteMatrix (Matrix *m)
 
 /* Print the matrix */
 void
-printMatrix (Matrix *m)
+printMatrix (adder_matrix *m)
 {
 	int i, j;
 
@@ -306,10 +306,10 @@ printMatrix (Matrix *m)
 }
 
 /* Multiply a matrix and with a vector */
-Vector *
-mvMultiply (Matrix *M, Vector *v)
+adder_vector *
+mvMultiply (adder_matrix *M, adder_vector *v)
 {
-	Vector *res;
+	adder_vector *res;
 
 	/* Check that the dimensions of M and v are valid for multiplication */
 	if (v->orientation == COLUMN_VECTOR) {
@@ -345,7 +345,7 @@ mvMultiply (Matrix *M, Vector *v)
 
 /* Set the matrix to a zero matrix */
 void
-matrixZeros (Matrix *m)
+matrixZeros (adder_matrix *m)
 {
 	int i, j;
 
@@ -358,7 +358,7 @@ matrixZeros (Matrix *m)
 
 /* Set the matrix to all ones */
 void
-matrixOnes (Matrix *m)
+matrixOnes (adder_matrix *m)
 {
 	int i, j;
 
@@ -371,7 +371,7 @@ matrixOnes (Matrix *m)
 
 /* Set the matrix to random values uniformly distributed between 0 and 1 */
 int
-randMatrix (Matrix *m)
+randMatrix (adder_matrix *m)
 {
 	long int seed;
 	size_t err;

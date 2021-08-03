@@ -11,10 +11,10 @@
 	  Eigenvalues */
 
 /* Transpose the matrix */
-Matrix *
-transpose (Matrix *m)
+adder_matrix *
+transpose (adder_matrix *m)
 {
-	Matrix *res;
+	adder_matrix *res;
 	long int i, j;
 	long int numRows, numColumns;
 
@@ -35,16 +35,16 @@ transpose (Matrix *m)
 
 /* Transpose a vector */
 void
-vectorTranspose (Vector *v)
+vectorTranspose (adder_vector *v)
 {
 	v->orientation *= -1;
 }
 
 /* Calculate the inverse of the matrix */
-Matrix *
-inverse (Matrix *M)
+adder_matrix *
+inverse (adder_matrix *M)
 {
-	Matrix *res;
+	adder_matrix *res;
 	lapack_int ipvt[M->rows];
 	lapack_int info;
 	int m, n;
@@ -121,10 +121,10 @@ inverse (Matrix *M)
 }
 
 /* Solve a linear system of equations */
-Vector *
-linearSolve (Matrix *M, Vector *b)
+adder_vector *
+linearSolve (adder_matrix *M, adder_vector *b)
 {
-	Vector *res;
+	adder_vector *res;
 	lapack_int n;
 	lapack_int m;
 	lapack_int ipvt[M->rows];
@@ -198,11 +198,11 @@ linearSolve (Matrix *M, Vector *b)
 }
 
 /* Solve an overdetermined linear system of equations */
-Vector *
-odLinearSolve (Matrix *A, Vector *b)
+adder_vector *
+odLinearSolve (adder_matrix *A, adder_vector *b)
 {
 	int err;
-	Vector *res;
+	adder_vector *res;
 
 	/* Create a result matrix to prevent overwriting b */
 	res = b;
@@ -249,10 +249,10 @@ odLinearSolve (Matrix *A, Vector *b)
 }
 
 /* Calculate the eigenvalues of the matrix */
-Vector *
-eigenValues (Matrix *M)
+adder_vector *
+eigenValues (adder_matrix *M)
 {
-	Vector *res;
+	adder_vector *res;
 	double *wr;
 	double *wi;
 	double *vl;
@@ -357,10 +357,10 @@ eigenValues (Matrix *M)
 }
 
 /* Calculate the QR factorization of a matrix */
-Matrix *
-qr (Matrix *M)
+adder_matrix *
+qr (adder_matrix *M)
 {
-	Matrix *res;
+	adder_matrix *res;
 	double *tau;
 	lapack_int err;
 	lapack_int m, n;
@@ -422,10 +422,10 @@ qr (Matrix *M)
 }
 
 /* Calculate LQ factorization of a matrix */
-Matrix *
-lq (Matrix *M)
+adder_matrix *
+lq (adder_matrix *M)
 {
-	Matrix *res;
+	adder_matrix *res;
 	double *tau;
 	lapack_int err;
 	lapack_int m, n;
@@ -480,10 +480,10 @@ lq (Matrix *M)
 }
 
 /* Calculate the LU factorization of a matrix */
-Matrix *
-lu (Matrix *M)
+adder_matrix *
+lu (adder_matrix *M)
 {
-	Matrix *res;
+	adder_matrix *res;
 	lapack_int m, n;
 	lapack_int *ipvt;
 	lapack_int err;
@@ -527,7 +527,7 @@ lu (Matrix *M)
 
 /* Calculate the norm of a vector */
 double
-vectorNorm (Vector *v)
+vectorNorm (adder_vector *v)
 {
 	const blasint n = v->size;
 	double res;
@@ -540,7 +540,7 @@ vectorNorm (Vector *v)
 
 /* Calculate the norm of a matrix */
 double
-matrixNorm (Matrix *M)
+matrixNorm (adder_matrix *M)
 {
 	/* norm (M) = sqrt (trace (M' * M)) */
 	double res;
