@@ -9,7 +9,8 @@ ERRORS
 	FILE_READ_ERROR = 2,
 	ARGUMENT_ERROR = 3,
 	SINGULAR_MATRIX = 4,
-	INIT_ERROR = 5
+	INVALID_ORIENTATION = 5,
+	INIT_ERROR = 6
 };
 
 enum
@@ -62,6 +63,7 @@ void printMatrix (adder_matrix *m);
 
 /* Matrix arithmetic functions */
 adder_vector * mvMultiply (adder_matrix *M, adder_vector *v);
+adder_matrix * mmMultiply (adder_matrix *A, adder_matrix *B);
 
 /* Matrix setting functions */
 void eye (adder_matrix *m, long int n);
