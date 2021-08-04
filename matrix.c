@@ -5,6 +5,8 @@
 #include <cblas.h>
 #include "matrix.h"
 
+/* TODO:  Result matrix should match orientation of input matrix/matrices */
+
 /* Vector IO functions */
 /* Create a new vector and set its values */
 adder_vector *
@@ -230,15 +232,8 @@ matrixInit (int orient, int numRows, int numColumns, double *values)
 		}
 	}
 	else {
-		fprintf (stderr, "Invalid orientation. Assuming row major.\n");
-		m->orientation = ROW_MAJOR;
-
-		/* Enter the values */
-		for (i = 0; i < numRows; i++) {
-			for (j = 0; j < numColumns; j++) {
-				m->mat[i * numColumns + j] = values[i * numColumns + j];
-			}
-		}
+		fprintf (stderr, "ERROR:  Invalid orientation\n");
+		return NULL;
 	}
 
 	return m;
@@ -274,7 +269,7 @@ matrixInit2 (int orient, int numRows, int numColumns)
 	}
 	else {
 		fprintf (stderr, "Invalid orientation. Assuming row major.\n");
-		m->orientation = ROW_MAJOR;
+		return NULL;
 	}
 
 	return m;
@@ -339,6 +334,56 @@ mvMultiply (adder_matrix *M, adder_vector *v)
 	/* Otherwise the matrix must be column major */
 	else {
 		cblas_dgemv (CblasColMajor, CblasNoTrans, M->rows, M->columns, 1.0, M->mat, M->rows, v->vect, 1, 0, res->vect, 1);
+		return res;
+	}
+}
+
+/* Multiply two matrices */
+adder_matrix *
+mmMultiply (adder_matrix *A, adder_matrix *B)
+{
+	int err;
+	adder_matrix *res;
+
+	/* Check that the dimensions of A and B are valid for multiplication */
+	if (A->columns != B->rows) {
+		fprintf (stderr, "ERROR:  Dimension of A is %dx%d and B is %dx%d\n", A->rows, A->columns, B->rows, B->columns);
+		return NULL;
+	}
+
+	/* Also check that the orientations of the matrices match */
+	else if (A->orientation != B->orientation) {
+		fprintf (stderr, "ERROR:  Orientations of A and B don't match.\n");
+		return NULL;
+	}
+
+	/* We can now create the result matrix and multiply */
+
+	/* Check if the matrix is row major */
+	if (A->orientation == ROW_MAJOR) {
+		/* Create the result matrix */
+		res = matrixInit2 (ROW_MAJOR, A->rows, B->columns);
+		if (res == NULL) {
+			fprintf (stderr, "Failed to create result matrix.\n");
+			return NULL;
+		}
+
+		/* Now we can perform the multiplication */
+		cblas_dgemm (CblasRowMajor, CblasNoTrans, CblasNoTrans, A->rows, B->columns, A->columns, 1.0, A->mat, A->columns, B->mat, B->columns, 0.0, res->mat, res->columns);
+		return res;
+	}
+
+	/* Otherwise the matrix must be column major */
+	else {
+		/* Create the result matrix */
+		res = matrixInit2 (COLUMN_MAJOR, A->rows, B->columns);
+		if (res == NULL) {
+			fprintf (stderr, "Failed to create result matrix.\n");
+			return NULL;
+		}
+
+		/* Perform the multiplication */
+		cblas_dgemm (CblasColMajor, CblasNoTrans, CblasNoTrans, A->rows, B->columns, A->rows, 1.0, A->mat, A->columns, B->mat, B->rows, 0.0, res->mat, res->columns);
 		return res;
 	}
 }
