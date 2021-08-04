@@ -204,7 +204,7 @@ odLinearSolve (adder_matrix *A, adder_vector *b)
 	int err;
 	adder_vector *res;
 
-	/* Create a result matrix to prevent overwriting b */
+	/* Create a result vector to prevent overwriting b */
 	res = b;
 
 	/* If the matrix is row major */
@@ -283,23 +283,6 @@ eigenValues (adder_matrix *M)
 		free (wr);
 		return NULL;
 	}
-
-/*	vl = malloc (n * sizeof (double));*/
-/*	if (vl == NULL) {*/
-/*		deleteVector (res);*/
-/*		free (wr);*/
-/*		free (wi);*/
-/*		return NULL;*/
-/*	}*/
-
-/*	vr = malloc (n * sizeof (double));*/
-/*	if (vr == NULL) {*/
-/*		deleteVector (res);*/
-/*		free (wr);*/
-/*		free (wi);*/
-/*		free (vl);*/
-/*		return NULL;*/
-/*	}*/
 
 /*	 If the matrix is row major */
 	if (M->orientation == ROW_MAJOR) {
@@ -562,14 +545,4 @@ matrixNorm (adder_matrix *M)
 	}
 
 	return res;
-
-	/* Multiply the matrix with its transpose using cblas_dgemm */
-/*	cblas_dgemm (CblasRowMajor, CblasTrans, CblasNoTrans, m, n, k, 1.0, M->mat, k, M->mat, n, 0.0, res->mat, n);*/
-
-	/* Calculate the trace of the product matrix */
-/*	for (i = 0; i < m; i++) {*/
-/*		trace += res->mat[i * m + i];*/
-/*	}*/
-
-/*	return sqrt (trace);*/
 }
