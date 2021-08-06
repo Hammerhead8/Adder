@@ -4,13 +4,14 @@
 #include <stdlib.h>
 #include <math.h>
 #include "integration.h"
+/*#include "../rng/rng.h"*/ /* For the random number generator */
 
 /* Three point Gauss-Legendre quadrature
  * f is the function to be integrated
  * a is the lower bound of integration
  * b is the upper bound of integration */
 double
-gauss3 (double (*f)(double), double a, double b)
+guass3 (adder_function *f, double a, double b)
 {
 	const double xi[3] = {-.7745966692, 0.0, .7745966692}; /* Abscissas */
 	const double wi[3] = {.5555554736, .8888888889, .5555554736}; /* Weights */
@@ -28,15 +29,15 @@ gauss3 (double (*f)(double), double a, double b)
 	/* Now perform the integration.
 	 * The loop is unrolled since there are only three points */
 	x = mul2 * xi[0] + mul3;
-	fValue = f(x);
+	fValue = f->function (x);
 	res += wi[0] * fValue;
 
 	x = mul2 * xi[1] + mul3;
-	fValue = f(x);
+	fValue = f->function (x);
 	res += wi[1] * fValue;
 
 	x = mul2 * xi[2] + mul3;
-	fValue = f(x);
+	fValue = f->function (x);
 	res += wi[2] * fValue;
 
 	/* Multiply res by mul1 to get the final result */
@@ -50,7 +51,7 @@ gauss3 (double (*f)(double), double a, double b)
  * a is the lower bound of integration
  * b is the upper bound of integration */
 double
-gauss5 (double (*f)(double), double a, double b)
+gauss5 (adder_function *f, double a, double b)
 {
 	const double xi[5] = {-0.9061798459, -0.5384693101, 0.0, 0.5384693101, 0.9061798459};
 	const double wi[5] = {0.2369268005, 0.4786286705, 0.5688888889, 0.4786286705, 0.2369268005};
@@ -67,23 +68,23 @@ gauss5 (double (*f)(double), double a, double b)
 
 	/* Now perform the integration */
 	x = mul2 * xi[0] + mul3;
-	fValue = f (x);
+	fValue = f->function (x);
 	res += wi[0] * fValue;
 
 	x = mul2 * xi[1] + mul3;
-	fValue = f (x);
+	fValue = f->function (x);
 	res += wi[1] * fValue;
 
 	x = mul2 * xi[2] + mul3;
-	fValue = f (x);
+	fValue = f->function (x);
 	res += wi[2] * fValue;
 
 	x = mul2 * xi[3] + mul3;
-	fValue = f (x);
+	fValue = f->function (x);
 	res += wi[3] * fValue;
 
 	x = mul2 * xi[4] + mul3;
-	fValue = f (x);
+	fValue = f->function (x);
 	res += wi[4] * fValue;
 
 	/* Multiply res by mul1 to get the final result */
@@ -97,7 +98,7 @@ gauss5 (double (*f)(double), double a, double b)
  * a is the lower bound of integration
  * b is the upper bound of integration */
 double
-gauss20 (double (*f)(double), double a, double b)
+gauss20 (adder_function *f, double a, double b)
 {
 	const double xi[20] = {-0.9931285992, -0.9639719273, -0.9122344283, -0.8391169718,
 			      -0.7463319065, -0.6360536807, -0.5108670020, -0.3737060887,
@@ -114,7 +115,7 @@ gauss20 (double (*f)(double), double a, double b)
 	double x;
 	double mul1, mul2, mul3;
 	double fValue;
-	double res = 0;
+	double res;
 	int i;
 
 	/* The first step is to transform the bounds from [a,b] to [-1,1] */
@@ -125,7 +126,7 @@ gauss20 (double (*f)(double), double a, double b)
 	/* Perform the integration */
 	for (i = 0; i < 20; i++) {
 		x = mul2 * xi[i] + mul3;
-		fValue = f (x);
+		fValue = f->function (x);
 		res += wi[i] * fValue;
 	}
 
@@ -145,33 +146,18 @@ gauss20 (double (*f)(double), double a, double b)
  *
  * Routine is a reimplementation of that by Pazus at
  * https://github.com/Pazus/Legendre-Gauss-Quadrature */
-double
-gaussQuad (double (*f)(double), double a, double b, int N)
+int
+galeQuad (adder_function *f, double a, double b, double *xi, double *wi, int N)
 {
-	double *xi;
-	double *wi;
 	double mul1, mul2, mul3;
 	double fValue;
 	double x;
-	double res = 0;
 	double z, z1;
 	double p, p1, p2, p3;
 	double h;
 	int i, j;
 	int m;
-
-	xi = malloc (N * sizeof (double));
-	if (xi == NULL) {
-		fprintf (stderr, "Failed to allocate abscissas.\n");
-		exit (1);
-	}
-
-	wi = malloc (N * sizeof (double));
-	if (wi == NULL) {
-		fprintf (stderr, "Failed to allocate weights.\n");
-		free (xi);
-		exit (1);
-	}
+	double res = 0;
 
 	/* Check if the number of points to be used is an even number */
 	if (N % 2 == 0) {
@@ -220,18 +206,16 @@ gaussQuad (double (*f)(double), double a, double b, int N)
 	/* Perform the integration */
 	for (i = 0; i < N; i++) {
 		x = mul2 * xi[i] + mul3;
-		fValue = f (x);
+		fValue = f->function (x);
 		res += wi[i] * fValue;
 	}
 
 	/* Multiply res by mul1 to get the final result */
 	res *= mul1;
 
-	free (xi);
-	free (wi);
-
 	return res;
 }
+
 
 /******************************
  * Other integration routines *
@@ -243,25 +227,19 @@ gaussQuad (double (*f)(double), double a, double b, int N)
  * b is the upper bound of integration
  * N is the number of points to use */
 double
-trapezoidIntegrate (double (*f)(double), double a, double b, int N)
+trapezoidIntegrate (adder_function *f, double a, double b, double *points, int N)
 {
 	double dX;
 	double x;
-	double *points;
 	double res = 0;
 	int i;
 
-	points = malloc ((N + 1) * sizeof (double));
-	if (points == NULL) {
-		fprintf (stderr, "Failed to allocate points for Trapezoidal integration.\n");
-		exit (1);
-	}
-
 	dX = (b - a) / (double)N;
 
+	/* Calculate the points that form the edges of the intervals */
 	for (i = 0; i <= N; i++) {
 		x = a + i * dX;
-		points[i] = f (x);
+		points[i] = f->function (x);
 	}
 
 	/* Perform the integration */
@@ -275,7 +253,93 @@ trapezoidIntegrate (double (*f)(double), double a, double b, int N)
 	}
 
 	res *= dX / 2;
-
-	free (points);
 	return res;
 }
+
+/* Apply the Composite Simpson's Rule
+ * f is the function being integrated
+ * a is the lower bound of integration
+ * b is the upper bound of integration
+ * N is the number of points to use.
+ * NOTE:  n must be an even number */
+double
+simpsonIntegrate (adder_function *f, double a, double b, double *points, int N)
+{
+	double dx;
+	double x;
+	double res = 0;
+	int i;
+
+	/* Calculate the constants */
+	dx = (b - a) / (double)N;
+
+	/* Calculate the function values for each point */
+	for (i = 0; i <= N; i++) {
+		x = a + i * dx;
+		points[i] = f->function (x);
+	}
+
+	/* Calculate the first and last points */
+	res += points[0];
+	res += points[N - 1];
+
+	/* Iterate the rest of the algorithm */
+	for (i = 1; i <= N - 1; i++) {
+		if (i % 2 == 0) {
+			res += 2 * points[i];
+		}
+		else {
+			res += 4 * points[i];
+		}
+	}
+
+	/* Multiply the sum by dx/3 to get the final result */
+	res *= dx / 3;
+
+	return res;
+}
+
+/* Use a Monte Carlo simulation to estimate the value of the integral.
+ * The generator used is the Mersenne Twister */
+/*int
+monteCarloIntegrate (adder_integral *ovi, double a, double b, int N, unsigned long int seed)
+{
+	int i;
+	double x;
+	double y;
+	double mult1, mult2;
+	adder_rng *r;*/
+
+	/* Calculate the scaling factors for the bounds.
+	 * The 0 and 1 come from the fact that the generator
+	 * has lower and upper bounds of 0 and 1, respectively. */
+/*	mult1 = (a - b) / (0 - 1);
+	mult1 = a - 0 * ((a - b) / (0 - 1));*/
+
+	/* Set the initial value of the solution to zero */
+/*	ovi->I = 0;*/
+
+	/* Initialize the random number generator */
+/*	r = adder_rng_init (adder_rng_randu, seed);
+	if (r == NULL) {
+		fprintf (stderr, "Failed to initialize random number generator\n");
+		return INTEGRAL_ERROR;
+	}*/
+
+	/* Perform the trials */
+/*	for (i = 0; i < N; i++) {
+		x = adder_rng_real (r);
+		x = x * mult1 + mult2;
+
+		y = ovi->f (x);
+		y *= (b - a);
+
+		ovi->I += y;
+	}
+
+	ovi->I /= (double)N;
+
+	adder_rng_free (r);
+
+	return INTEGRAL_SUCCESS;
+}*/
