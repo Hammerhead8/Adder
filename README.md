@@ -17,6 +17,7 @@ Adder is still under development and is incomplete, but the currently supported 
   * Vector norm
   * Matrix norm
 * Fractions
+* Complex numbers
 * Numerical integration
   * Gauss-Legendre quadrature
     * 3-point
@@ -25,6 +26,12 @@ Adder is still under development and is incomplete, but the currently supported 
     * 100-point
     * User selected number of points
   * Trapezoid Rule
+* Numerical differentiation
+  * Symetric difference quotient
+  * Five point method
+    * Center
+    * Forward
+    * Backward
 * Optimization
   * One-dimensional search
     * Golden Section search
