@@ -33,7 +33,7 @@ Adder is still under development and is incomplete, but the currently supported 
     * Forward
     * Backward
 * Optimization
-  * One-dimensional search
+  * One-dimensional unconstrained search
     * Golden Section search
     * Fibbonacci search
     * Equal Area search
