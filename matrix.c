@@ -72,6 +72,18 @@ vectorInit2 (int orient, int numElements)
 
 	v->size = numElements;
 
+	/* Set the orientation */
+	if (orient == ROW_VECTOR) {
+		v->orientation = ROW_VECTOR;
+	}
+	else if (orient == COLUMN_VECTOR) {
+		v->orientation = COLUMN_VECTOR;
+	}
+	else {
+		fprintf (stderr, "Invalid orientation.\n");
+		return NULL;
+	}
+
 	return v;
 }
 
@@ -232,8 +244,15 @@ matrixInit (int orient, int numRows, int numColumns, double *values)
 		}
 	}
 	else {
-		fprintf (stderr, "ERROR:  Invalid orientation\n");
-		return NULL;
+		fprintf (stderr, "Invalid orientation. Assuming row major.\n");
+		m->orientation = ROW_MAJOR;
+
+		/* Enter the values */
+		for (i = 0; i < numRows; i++) {
+			for (j = 0; j < numColumns; j++) {
+				m->mat[i * numColumns + j] = values[i * numColumns + j];
+			}
+		}
 	}
 
 	return m;
@@ -269,7 +288,7 @@ matrixInit2 (int orient, int numRows, int numColumns)
 	}
 	else {
 		fprintf (stderr, "Invalid orientation. Assuming row major.\n");
-		return NULL;
+		m->orientation = ROW_MAJOR;
 	}
 
 	return m;
