@@ -58,4 +58,6 @@ The following libraries are required:
 * BLAS (tested with OpenBLAS)
 * LAPACKE:  https://performance.netlib.org/lapack/lapacke.html
 
+When using any functions that call BLAS or LAPACKE routines, the program should be compiled using the `-llapacke` and `-lopenblas` flags.
+
 More will be added as features are developed.
