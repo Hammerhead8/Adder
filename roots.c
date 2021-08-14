@@ -132,7 +132,6 @@ steffensen (adder_function *f, double guess, double tol, unsigned int iterLimit)
 
 		/* Definition of Steffensen's Method */
 		xn1 = xn - (fxn * fxn) / (f1xn - fxn);
-//		xn1 = xn - (pow (fxn - xn, 2) / (f1xn - 2 * fxn + xn));
 
 		/* Check if the tolerance for the solution has been met */
 		if (fabs (xn - xn1) <= tol) {
