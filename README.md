@@ -44,7 +44,7 @@ Adder is still under development and is incomplete, but the currently supported 
 # Planned features
 * Fractions
 	* Create fraction from an arbitrary decimal
-* Numerical differentiation
+	* Complex number fractions
 * Numerical integration
 	* Simpson's Rule
 	* Monte Carlo integration
