@@ -125,7 +125,7 @@ steffensen (adder_function *f, double guess, double tol, unsigned int iterLimit)
 	/* The algorithm */
 	for (i = 0; i < iterLimit; i++) {
 		fxn = f->function (xn);
-		f1xn = f->function (f);
+		f1xn = f->function (fxn + xn);
 
 		/* Definition of Steffensen's Method */
 		xn1 = xn - (fxn * fxn) / (f1xn - fxn);
