@@ -5,7 +5,7 @@
 #ifndef DIFFERENTIATE_H
 #define DIFFERENTIATE_H
 
-#include "../adder_math.h"
+#include "adder_math.h"
 
 double derivSymDiff (adder_function *f, double x, double h);
 double derivCenter (adder_function *f, double x, double h);
