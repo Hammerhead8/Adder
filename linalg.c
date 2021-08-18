@@ -3,42 +3,12 @@
  * This is the linear algebra part of Adder */
 #include <stdlib.h> /* For malloc and free */
 #include <math.h> /* For sqrt */
-#include <cblas.h>
+#include <cblas-openblas.h>
 #include <lapacke.h>
 #include "linalg.h"
 
 /* TODO:  Singular value decomposition
 	  Eigenvalues */
-
-/* Transpose the matrix */
-adder_matrix *
-transpose (adder_matrix *m)
-{
-	adder_matrix *res;
-	long int i, j;
-	long int numRows, numColumns;
-
-	numRows = m->rows;
-	numColumns = m->columns;
-
-	/* Create a new matrix */
-	res = matrixInit2 (m->orientation, numColumns, numRows);
-
-	for (i = 0; i < numRows; i++) {
-		for (j = 0; j < numColumns; j++) {
-			res->mat[j * numRows + i] = m->mat[i * numColumns + j];
-		}
-	}
-
-	return res;
-}
-
-/* Transpose a vector */
-void
-vectorTranspose (adder_vector *v)
-{
-	v->orientation *= -1;
-}
 
 /* Calculate the inverse of the matrix */
 adder_matrix *
@@ -204,7 +174,7 @@ odLinearSolve (adder_matrix *A, adder_vector *b)
 	int err;
 	adder_vector *res;
 
-	/* Create a result vector to prevent overwriting b */
+	/* Create a result matrix to prevent overwriting b */
 	res = b;
 
 	/* If the matrix is row major */
@@ -283,6 +253,23 @@ eigenValues (adder_matrix *M)
 		free (wr);
 		return NULL;
 	}
+
+/*	vl = malloc (n * sizeof (double));*/
+/*	if (vl == NULL) {*/
+/*		deleteVector (res);*/
+/*		free (wr);*/
+/*		free (wi);*/
+/*		return NULL;*/
+/*	}*/
+
+/*	vr = malloc (n * sizeof (double));*/
+/*	if (vr == NULL) {*/
+/*		deleteVector (res);*/
+/*		free (wr);*/
+/*		free (wi);*/
+/*		free (vl);*/
+/*		return NULL;*/
+/*	}*/
 
 /*	 If the matrix is row major */
 	if (M->orientation == ROW_MAJOR) {
@@ -545,4 +532,14 @@ matrixNorm (adder_matrix *M)
 	}
 
 	return res;
+
+	/* Multiply the matrix with its transpose using cblas_dgemm */
+/*	cblas_dgemm (CblasRowMajor, CblasTrans, CblasNoTrans, m, n, k, 1.0, M->mat, k, M->mat, n, 0.0, res->mat, n);*/
+
+	/* Calculate the trace of the product matrix */
+/*	for (i = 0; i < m; i++) {*/
+/*		trace += res->mat[i * m + i];*/
+/*	}*/
+
+/*	return sqrt (trace);*/
 }
