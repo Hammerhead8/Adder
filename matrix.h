@@ -9,8 +9,7 @@ ERRORS
 	FILE_READ_ERROR = 2,
 	ARGUMENT_ERROR = 3,
 	SINGULAR_MATRIX = 4,
-	INVALID_ORIENTATION = 5,
-	INIT_ERROR = 6
+	INIT_ERROR = 5
 };
 
 enum
@@ -61,7 +60,7 @@ adder_matrix *matrixInit2 (int orient, int numRows, int numcolumns);
 void deleteMatrix (adder_matrix *m);
 void printMatrix (adder_matrix *m);
 
-/* Matrix arithmetic functions */
+/* Matrix multiplication functions */
 adder_vector * mvMultiply (adder_matrix *M, adder_vector *v);
 adder_matrix * mmMultiply (adder_matrix *A, adder_matrix *B);
 
@@ -70,5 +69,10 @@ void eye (adder_matrix *m, long int n);
 void matrixZeros (adder_matrix *m);
 void matrixOnes (adder_matrix *m);
 int randMatrix (adder_matrix *m);
+
+/* Other matrix and vector functions */
+void transposeVector (adder_vector *v);
+adder_matrix * transposeMatrix (adder_matrix *m);
+void convertMatrix (adder_matrix *m); /* Convert a matrix between row- and column-major */
 
 #endif
