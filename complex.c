@@ -6,6 +6,8 @@
 #include <math.h> /* For sqrt and log */
 #include "complex.h"
 
+#define M_PI 3.14159265358979323846
+
 /*********************************
  * Initialize and delete numbers *
  *********************************/
