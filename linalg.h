@@ -8,7 +8,7 @@
 #include "matrix.h"
 
 /* Extra matrix functions */
-adder_matrix * transpose (adder_matrix *m);
+adder_matrix * inverse (adder_matrix *m);
 
 /* Equation solving */
 adder_vector * linearSolve (adder_matrix *M, adder_vector *b);
