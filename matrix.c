@@ -185,11 +185,11 @@ randVector (adder_vector *v)
 	fclose (fp);
 
 	/* Seed the random number generator */
-	srand48 (seed);
+	srand (seed);
 
 	/* Generate the random numbers */
 	for (i = 0; i < v->size; i++) {
-		v->vect[i] = drand48 ();
+		v->vect[i] = rand () / (double)RAND_MAX;
 	}
 
 	return 0;
@@ -460,12 +460,12 @@ randMatrix (adder_matrix *m)
 	fclose (fp);
 
 	/* Seed the random number generator */
-	srand48 (seed);
+	srand (seed);
 
 	/* Generate the random numbers */
 	for (i = 0; i < m->rows; i++) {
 		for (j = 0; j < m->columns; j++) {
-			m->mat[i * m->columns + j] = drand48 ();
+			m->mat[i * m->columns + j] = rand () / (double)RAND_MAX;
 		}
 	}
 
