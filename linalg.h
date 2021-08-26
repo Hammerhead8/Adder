@@ -13,6 +13,7 @@ adder_matrix * inverse (adder_matrix *m);
 /* Equation solving */
 adder_vector * linearSolve (adder_matrix *M, adder_vector *b);
 adder_vector * odLinearSolve (adder_matrix *M, adder_vector *b);
+adder_vector * linearLeastSquares (adder_matrix *M, adder_vector *b);
 
 /* Eigenvalues */
 adder_vector * eigenValues (adder_matrix *m);

@@ -7,8 +7,7 @@
 #include <lapacke.h>
 #include "linalg.h"
 
-/* TODO:  Singular value decomposition
-	  Eigenvalues */
+/* TODO:  Singular value decomposition */
 
 /* Calculate the inverse of the matrix */
 adder_matrix *
@@ -89,6 +88,10 @@ inverse (adder_matrix *M)
 
 	return 0;
 }
+
+/********************
+ * Equation solving *
+ ********************/
 
 /* Solve a linear system of equations */
 adder_vector *
@@ -214,6 +217,72 @@ odLinearSolve (adder_matrix *A, adder_vector *b)
 		else {
 			fprintf (stderr, "Solution could not be computed\n");
 			return NULL;
+		}
+	}
+}
+
+/* Solve a linear least squares problem */
+adder_vector *
+linearLeastSquares (adder_matrix *M, adder_vector *b)
+{
+	adder_vector *res;
+	int *jpvt;
+	int err;
+	int rank;
+
+	/* Check that M has the same number of columns as b has rows */
+	if (M->rows != b->size) {
+		fprintf (stderr, "ERROR:  Invalid dimensions in function linearLeastSquares.\n");
+		return 0x00;
+	}
+
+	res = vectorInit (COLUMN_VECTOR, M->rows, b->vect);
+	if (res == 0x00) {
+		fprintf (stderr, "ERROR:  Could not create result vector in function linearLeastSquares.\n");
+		return 0x00;
+	}
+
+	jpvt = malloc (M->columns * sizeof (int));
+	if (jpvt == 0x00) {
+		fprintf (stderr, "ERROR:  could not create jpvt vector in function linearLeastSquares.\n");
+		deleteVector (res);
+		return 0x00;
+	}
+
+	/* Calculate the solution to the least squares approximation */
+	if (M->orientation == ROW_MAJOR) {
+		rank = M->columns;
+
+		err = LAPACKE_dgelsy (LAPACK_ROW_MAJOR, M->rows, M->columns, 1, M->mat, M->columns, res->vect, 1, jpvt, 1e-8, &rank);
+		if (err == 0) {
+			free (jpvt);
+			res->vect = realloc (res->vect, M->columns * sizeof (double));
+			res->size = M->columns;
+			return res;
+		}
+		else {
+			fprintf (stderr, "ERROR:  illegal argument number %d in LAPACKE_dgelsy subroutine in function linearLeastSquares.\n", -1 * err);
+			free (jpvt);
+			deleteVector (res);
+			return 0x00;
+		}
+	}
+
+	else {
+		rank = M->rows;
+
+		err = LAPACKE_dgelsy (LAPACK_COL_MAJOR, M->rows, M->columns, 1, M->mat, M->rows, res->vect, 1, jpvt, 1e-8, &rank);
+		if (err == 0) {
+			free (jpvt);
+			res->vect = realloc (res->vect, M->rows * sizeof (double));
+			res->size = M->rows;
+			return res;
+		}
+		else {
+			fprintf (stderr, "ERROR:  illegal argument number %d in LAPACKE_dgelsy subroutine in function linearLeastSquares.\n", -1 * err);
+			free (jpvt);
+			deleteVector (res);
+			return 0x00;
 		}
 	}
 }
