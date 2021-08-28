@@ -9,7 +9,7 @@
 
 /* Extra matrix functions */
 adder_matrix * inverse (adder_matrix *m);
-adder_matrix * pseudoInverse (adder_matrix *m);
+adder_matrix * pseudoinverse (adder_matrix *m);
 
 /* Equation solving */
 adder_vector * linearSolve (adder_matrix *M, adder_vector *b);

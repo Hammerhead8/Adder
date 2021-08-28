@@ -89,6 +89,222 @@ inverse (adder_matrix *M)
 	return 0;
 }
 
+/* Calculate the Moore-Penrose pseudoinverse of a matrix
+ * using its singular value decomposition */
+adder_matrix *
+pseudoinverse (adder_matrix *m)
+{
+	adder_matrix *A;
+	adder_matrix *u;
+	adder_matrix *vt;
+	adder_vector *s;
+	adder_matrix *sMatrix;
+	adder_matrix *vts;
+	adder_matrix *res;
+	int aRows, aColumns;
+	int i, j;
+	int err;
+
+	/* Create a copy of m called A so m doesn't get overwritten */
+	aRows = m->rows;
+	aColumns = m->columns;
+	A = matrixInit (m->orientation, aRows, aColumns, m->mat);
+	if (A == 0x00) {
+		return 0x00;
+	}
+
+	/* Create a matrix called u, which the orthogonal matrix to m */
+	u = matrixInit2 (m->orientation, aRows, aRows);
+	if (u == 0x00) {
+		deleteMatrix (A);
+		return 0x00;
+	}
+
+	/* Create the s vector, which holds the singular values of m */
+	if (aRows <= aColumns) {
+		s = vectorInit2 (COLUMN_VECTOR, aRows);
+	}
+	else {
+		s = vectorInit2 (COLUMN_VECTOR, aColumns);
+	}
+
+	if (s == 0x00) {
+		deleteMatrix (A);
+		deleteMatrix (u);
+		return 0x00;
+	}
+
+	/* Create sMatrix, which is s represented as a diagonal matrix */
+	sMatrix = matrixInit2 (m->orientation, s->size, s->size);
+	if (sMatrix == 0x00) {
+		deleteMatrix (A);
+		deleteMatrix (u);
+		deleteVector (s);
+		return 0x00;
+	}
+
+	/* Create the vt matrix */
+	vt = matrixInit2 (m->orientation, aColumns, aColumns);
+	if (vt == 0x00) {
+		deleteMatrix (A);
+		deleteMatrix (u);
+		deleteVector (s);
+		return 0x00;
+	}
+
+	/* Create the vts matrix, which is the result of VT * s */
+	vts = matrixInit2 (m->orientation, vt->rows, vt->columns);
+	if (vts == 0x00) {
+		deleteMatrix (A);
+		deleteMatrix (u);
+		deleteVector (s);
+		deleteMatrix (sMatrix);
+		deleteMatrix (vt);
+		return 0x00;
+	}
+
+	/* Create the solution matrix, which is the result of vts * U */
+	res = matrixInit2 (m->orientation, vts->rows, vts->columns);
+	if (res == 0x00) {
+		deleteMatrix (A);
+		deleteMatrix (u);
+		deleteVector (s);
+		deleteMatrix (sMatrix);
+		deleteMatrix (vt);
+		deleteMatrix (vts);
+		return 0x00;
+	}
+
+	/* Calculate the singular value decomposition */
+	if (m->orientation == ROW_MAJOR) {
+		err = LAPACKE_dgesdd (LAPACK_ROW_MAJOR, 'A', A->rows, A->columns, A->mat, A->columns, s->vect, u->mat, u->columns, vt->mat, vt->columns);
+
+		if (err < 0) {
+			if (err == -4) {
+				fprintf (stderr, "ERROR:  A matrix has a NAN entry.\n");
+				deleteMatrix (A);
+				deleteMatrix (u);
+				deleteVector (s);
+				deleteMatrix (sMatrix);
+				deleteMatrix (vt);
+				deleteMatrix (vts);
+				deleteMatrix (res);
+				return 0x00;
+			}
+
+			else {
+				fprintf (stderr, "ERROR:  Illegal argument number %d in SVD subroutine in function pseudoinverse.\n", -1 * err);
+				deleteMatrix (A);
+				deleteMatrix (u);
+				deleteVector (s);
+				deleteMatrix (sMatrix);
+				deleteMatrix (vt);
+				deleteMatrix (vts);
+				deleteMatrix (res);
+				return 0x00;
+			}
+		}
+
+		else if (err > 0) {
+			fprintf (stderr, "ERROR:  DBDSDC subroutine did not converge in function pseudoInverse\n");
+			deleteMatrix (A);
+			deleteMatrix (u);
+			deleteVector (s);
+			deleteMatrix (sMatrix);
+			deleteMatrix (vt);
+			deleteMatrix (vts);
+			deleteMatrix (res);
+			return 0x00;
+		}
+	}
+
+	else {
+		err = LAPACKE_dgesdd (LAPACK_COL_MAJOR, 'A', A->rows, A->columns, A->mat, A->rows, s->vect, u->mat, u->rows, vt->mat, vt->rows);
+
+		if (err < 0) {
+			if (err == -4) {
+				fprintf (stderr, "ERROR:  A matrix has a NAN entry.\n");
+				deleteMatrix (A);
+				deleteMatrix (u);
+				deleteVector (s);
+				return 0x00;
+			}
+
+			else {
+				fprintf (stderr, "ERROR:  Illegal argument number %d in SVD subroutine in function pseudoinverse.\n", -1 * err);
+				deleteMatrix (A);
+				deleteMatrix (u);
+				deleteVector (s);
+				deleteMatrix (sMatrix);
+				deleteMatrix (vt);
+				deleteMatrix (vts);
+				deleteMatrix (res);
+				return 0x00;
+			}
+		}
+
+		else if (err > 0) {
+			fprintf (stderr, "ERROR:  DBDSDC subroutine did not converge in function pseudoInverse\n");
+			deleteMatrix (A);
+			deleteMatrix (u);
+			deleteVector (s);
+			deleteMatrix (sMatrix);
+			deleteMatrix (vt);
+			deleteMatrix (vts);
+			deleteMatrix (res);
+			return 0x00;
+		}
+	}
+
+	/* Convert s to a diagonal matrix whose elements are the reciprocals of those in s */
+	for (i = 0; i < s->size; i++) {
+		for (j = 0; j < s->size; j++) {
+			if (i == j) {
+				if (fabs (s->vect[i]) < __FLT_EPSILON__) {
+					sMatrix->mat[i * s->size + j] = 0;
+				}
+
+				else {
+					sMatrix->mat[i * s->size + j] = 1 / s->vect[i];
+				}
+			}
+
+			else {
+				sMatrix->mat[i * s->size + j] = 0;
+			}
+		}
+	}
+
+	printVector (s);
+	printf ("\n");
+
+	printMatrix (sMatrix);
+	printf ("\n");
+
+	/* Multiply V * S = VTS, followed by VTS * U = res */
+	if (m->orientation == ROW_MAJOR) {
+		cblas_dgemm (CblasRowMajor, CblasTrans, CblasNoTrans, vt->rows, sMatrix->columns, vt->columns, 1.0, vt->mat, vt->columns, sMatrix->mat, sMatrix->columns, 0.0, vts->mat, vts->columns);
+
+		cblas_dgemm (CblasRowMajor, CblasNoTrans, CblasTrans, vts->rows, u->columns, vts->columns, 1.0, vts->mat, vts->columns, u->mat, u->columns, 0.0, res->mat, res->columns);
+	}
+
+	else {
+		cblas_dgemm (CblasColMajor, CblasTrans, CblasNoTrans, vt->rows, sMatrix->columns, vt->columns, 1.0, vt->mat, vt->rows, sMatrix->mat, sMatrix->rows, 0.0, vts->mat, vts->rows);
+
+		cblas_dgemm (CblasColMajor, CblasNoTrans, CblasTrans, vts->rows, u->columns, vts->columns, 1.0, vts->mat, vts->rows, u->mat, u->rows, 0.0, res->mat, res->rows);
+	}
+
+	/* Delete the vectors and matrices used in intermediate calculations */
+	deleteMatrix (A);
+	deleteMatrix (u);
+	deleteVector (s);
+	deleteMatrix (sMatrix);
+	deleteMatrix (vt);
+	deleteMatrix (vts);
+
+	return res;
+}
+
 /********************
  * Equation solving *
  ********************/
