@@ -9,6 +9,7 @@
 
 /* Extra matrix functions */
 adder_matrix * inverse (adder_matrix *m);
+adder_matrix * pseudoInverse (adder_matrix *m);
 
 /* Equation solving */
 adder_vector * linearSolve (adder_matrix *M, adder_vector *b);
@@ -24,7 +25,7 @@ adder_matrix * lq (adder_matrix *m);
 adder_matrix * lu (adder_matrix *m);
 
 /* Singular value decomposition */
-void svd (adder_matrix *m);
+adder_vector * svd (adder_matrix *m);
 
 /* Norms */
 double vectorNorm (adder_vector *v);

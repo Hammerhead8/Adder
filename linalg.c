@@ -256,6 +256,8 @@ linearLeastSquares (adder_matrix *M, adder_vector *b)
 		err = LAPACKE_dgelsy (LAPACK_ROW_MAJOR, M->rows, M->columns, 1, M->mat, M->columns, res->vect, 1, jpvt, 1e-8, &rank);
 		if (err == 0) {
 			free (jpvt);
+
+			/* Resize the solution vector to contain only the solution coefficients */
 			res->vect = realloc (res->vect, M->columns * sizeof (double));
 			res->size = M->columns;
 			return res;
@@ -274,6 +276,8 @@ linearLeastSquares (adder_matrix *M, adder_vector *b)
 		err = LAPACKE_dgelsy (LAPACK_COL_MAJOR, M->rows, M->columns, 1, M->mat, M->rows, res->vect, 1, jpvt, 1e-8, &rank);
 		if (err == 0) {
 			free (jpvt);
+
+			/* Resize the solution vector to contain only the solution coefficients */
 			res->vect = realloc (res->vect, M->rows * sizeof (double));
 			res->size = M->rows;
 			return res;
@@ -393,6 +397,117 @@ eigenValues (adder_matrix *M)
 			return NULL;
 		}
 	}
+}
+
+/* Calculate the singular values of a matrix */
+adder_vector *
+svd (adder_matrix *m)
+{
+	adder_matrix *A;
+	adder_matrix *u;
+	adder_vector *s;
+	adder_matrix *vt;
+	int i;
+	int err;
+
+	/* Create a copy of m called A so m doesn't get overwritten */
+	A = matrixInit (m->orientation, m->rows, m->columns, m->mat);
+	if (A == 0x00) {
+		return 0x00;
+	}
+
+	/* Create a matrix called u, which the orthogonal matrix to m */
+	u = matrixInit2 (m->orientation, m->rows, m->rows);
+	if (u == 0x00) {
+		deleteMatrix (A);
+		return 0x00;
+	}
+
+	/* Create the s vector, which holds the singular values of m */
+	if (m->rows <= m->columns) {
+		s = vectorInit2 (COLUMN_VECTOR, m->rows);
+	}
+	else {
+		s = vectorInit2 (COLUMN_VECTOR, m->columns);
+	}
+
+	if (s == 0x00) {
+		deleteMatrix (A);
+		deleteMatrix (u);
+		return 0x00;
+	}
+
+	/* Create the vt matrix */
+	vt = matrixInit2 (m->orientation, m->columns, m->columns);
+	if (vt == 0x00) {
+		deleteMatrix (A);
+		deleteMatrix (u);
+		deleteVector (s);
+		return 0x00;
+	}
+
+	/* Calculate the singular value decomposition */
+	if (m->orientation == ROW_MAJOR) {
+		err = LAPACKE_dgesdd (LAPACK_ROW_MAJOR, 'A', A->rows, A->columns, A->mat, A->columns, s->vect, u->mat, u->columns, vt->mat, vt->columns);
+
+		if (err < 0) {
+			if (err == -4) {
+				fprintf (stderr, "ERROR:  A matrix has a NAN entry.\n");
+				deleteMatrix (A);
+				deleteMatrix (u);
+				deleteVector (s);
+				return 0x00;
+			}
+
+			else {
+				fprintf (stderr, "ERROR:  Illegal argument number %d in SVD subroutine in function pseudoinverse.\n", -1 * err);
+				deleteMatrix (A);
+				deleteMatrix (u);
+				deleteVector (s);
+				return 0x00;
+			}
+		}
+
+		else if (err > 0) {
+			fprintf (stderr, "ERROR:  DBDSDC subroutine did not converge in function pseudoInverse\n");
+			deleteMatrix (A);
+			deleteMatrix (u);
+			deleteVector (s);
+			return 0x00;
+		}
+	}
+
+	else {
+		err = LAPACKE_dgesdd (LAPACK_COL_MAJOR, 'A', A->rows, A->columns, A->mat, A->rows, s->vect, u->mat, u->rows, vt->mat, vt->rows);
+
+		if (err < 0) {
+			if (err == -4) {
+				fprintf (stderr, "ERROR:  A matrix has a NAN entry.\n");
+				deleteMatrix (A);
+				deleteMatrix (u);
+				deleteVector (s);
+				return 0x00;
+			}
+
+			else {
+				fprintf (stderr, "ERROR:  Illegal argument number %d in SVD subroutine in function pseudoinverse.\n", -1 * err);
+				deleteMatrix (A);
+				deleteMatrix (u);
+				deleteVector (s);
+				return 0x00;
+			}
+		}
+
+		else if (err > 0) {
+			fprintf (stderr, "ERROR:  DBDSDC subroutine did not converge in function pseudoInverse\n");
+			deleteMatrix (A);
+			deleteMatrix (u);
+			deleteVector (s);
+			return 0x00;
+		}
+	}
+
+	return s;
 }
 
 /* Calculate the QR factorization of a matrix */
