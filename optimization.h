@@ -24,15 +24,8 @@ enum
 };
 
 /* Line search methods */
-double lineSearch (double (*function)(double), double a, double b, int N, double stoppingCriteria);
-double goldenSectionSearch (double (*function)(double), double a, double b, double stoppingCriteria);
-double fibonacciSearch (double (*function)(double), double a, double b, int N, double stoppingCriteria);
-double equalAreaSearch (double (*function)(double), double a, double b, double stoppingCriteria);
-
-/* Multi-dimensional search methods */
-double mdSearch (double (*function)(Vector*), (Vector*)(*gradient)(Vector*), Vector *x0, double stoppingCriteria);
-double steepestDescent (double (*function)(Vector*), (Vector*)(*function)(Vector*), Vector *x0, double stoppingCriteria);
-double newtonRaphson (double (*function)(Vector*), Vector *x0, double stoppingCriteria);
-double conjugateGradient (double (*function)(Vector*), (Vector*)(*gradient)(Vector*), Vector *x0, double stoppingCriteria);
+double goldenSectionSearch (adder_function *f, double a, double b, double stoppingCriteria);
+double fibonacciSearch (adder_function *f, double a, double b, int N, double stoppingCriteria);
+double equalAreaSearch (adder_function *f, double a, double b, double stoppingCriteria);
 
 #endif
