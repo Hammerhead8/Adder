@@ -5,7 +5,22 @@
 #ifndef OPTIMIZATION_H
 #define OPTIMIZATION_H
 
-#include "matrix.h"
+#include "../adder_math.h"
+
+enum
+Errors
+{
+	OPT_SUCCESS, /* 0 */
+	OPT_ERROR, /* 1 */
+	INVALID_SEARCH /* 2 */
+};
+
+enum
+ReturnValue
+{
+	X_VALUE, /* 0 */
+	F_VALUE /* 1 */
+};
 
 enum
 LineSearchAlgorithms
@@ -15,17 +30,9 @@ LineSearchAlgorithms
 	EQUAL_AREA = 3
 };
 
-enum
-2DSearchAlgorithms
-{
-	STEEPEST_DESCENT = 1,
-	NEWTON_RAPHSON = 2,
-	CONJUGATE_GRADIENT = 3
-};
-
 /* Line search methods */
-double goldenSectionSearch (adder_function *f, double a, double b, double stoppingCriteria);
-double fibonacciSearch (adder_function *f, double a, double b, int N, double stoppingCriteria);
-double equalAreaSearch (adder_function *f, double a, double b, double stoppingCriteria);
+double goldenSectionSearch (adder_function *f, double a, double b, double stoppingCriteria, int retValue);
+double fibonacciSearch (adder_function *f, double a, double b, int N, double stoppingCriteria, int retValue);
+double equalAreaSearch (adder_function *f, double a, double b, int N, double stoppingCriteria, int retValue);
 
 #endif
