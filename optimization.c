@@ -3,30 +3,6 @@
 #include <stdio.h>
 #include "optimization.h"
 
-/* Determine which algorithm to call and then call it */
-/*double*/
-/*linSearch (int searchMethod, adder_function *f,*/
-/*	   double a, double b, int N, double stoppingCriteria)*/
-/*{*/
-/*	double *res;*/
-
-/*	if (searchMethod == GOLDEN_SECTION) {*/
-/*		*res = goldenSectionSearch (f, a, b, stoppingCriteria);*/
-/*	}*/
-/*	else if (searchMethod == FIBONACCI) {*/
-/*		*res = fibonacciSearch (f, a, b, N, stoppingCriteria);*/
-/*	}*/
-/*	else if (searchMethod == EQUAL_AREA) {*/
-/*		*res = equalArea (f, a, b, stoppingCriteria);*/
-/*	}*/
-/*	else {*/
-/*		fprintf (stderr, "Invalid search method specified. ");*/
-/*		res = NULL;*/
-/*	}*/
-
-/*	return res;*/
-/*}*/
-
 /* Golden Section search method of a single variable function
  * retValue is used to determine if the x-value or the function value of the minimum should be returned
  * func is the function being minimized
@@ -34,7 +10,7 @@
  * b is the upper bound of the initial search region
  * stoppingCriteria is the maximum tolerance for stopping the search */
 double
-goldenSectionSearch (int retValue, double (*func)(double), double a, double b, double stoppingCriteria)
+goldenSectionSearch (adder_function *f, double a, double b, double stoppingCriteria, int retValue)
 {
 	double alpha;
 	double beta;
@@ -47,8 +23,8 @@ goldenSectionSearch (int retValue, double (*func)(double), double a, double b, d
 		alpha = 0.382 * (b - a) + a;
 		beta = 0.618 * (b - a) + a;
 
-		gA = func (alpha);
-		gB = func (beta);
+		gA = f->function (alpha);
+		gB = f->function (beta);
 
 		if (gA < gB) {
 			b = beta;
@@ -70,7 +46,7 @@ goldenSectionSearch (int retValue, double (*func)(double), double a, double b, d
 		return x;
 	}
 	else if (retValue == F_VALUE) {
-		return func (x);
+		return f->function (x);
 	}
 	else {
 		fprintf (stderr, "Invalid return value specified. Returning x value.\n");
@@ -85,7 +61,7 @@ goldenSectionSearch (int retValue, double (*func)(double), double a, double b, d
  * b is the upper bound of the search region
  * N is the number of iterations to perform */
 double
-fibonacciSearch (int retValue, double (*func)(double), double a, double b, int N)
+fibonacciSearch (adder_function *f, double a, double b, int N, double stoppingCriteria, int retValue)
 {
 	double fibNums[N+1];
 	double alpha;
@@ -114,8 +90,8 @@ fibonacciSearch (int retValue, double (*func)(double), double a, double b, int N
 			beta = (fibNums[N - i -1] / fibNums[N - i]) * (b - a) + a;
 		}
 
-		fA = func (alpha);
-		fB = func (beta);
+		fA = f->function (alpha);
+		fB = f->function (beta);
 
 		if (fA < fB) {
 			b = beta;
@@ -136,7 +112,7 @@ fibonacciSearch (int retValue, double (*func)(double), double a, double b, int N
 		return x;
 	}
 	else if (retValue == F_VALUE) {
-		return func (x);
+		return f->function (x);
 	}
 	else {
 		fprintf (stderr, "Invalid return value specified. Using x-value.\n");
@@ -151,7 +127,7 @@ fibonacciSearch (int retValue, double (*func)(double), double a, double b, int N
  * b is the upper bound of the search region
  * stoppingCriteria is the maximum tolerance for stopping the search */
 double
-equalAreaSearch (int retValue, double (*func)(double), double a, double b, int N)
+equalAreaSearch (adder_function *f, double a, double b, int N, double stoppingCriteria, int retValue)
 {
 	double alpha;
 	double beta;
@@ -165,8 +141,8 @@ equalAreaSearch (int retValue, double (*func)(double), double a, double b, int N
 		alpha = (a + b) / 3;
 		beta = 2 * (a + b) / 3;
 
-		fA = func (alpha);
-		fB = func (beta);
+		fA = f->function (alpha);
+		fB = f->function (beta);
 
 		if (fA < fB) {
 			b = beta;
@@ -187,7 +163,7 @@ equalAreaSearch (int retValue, double (*func)(double), double a, double b, int N
 		return x;
 	}
 	else if (retValue == F_VALUE) {
-		return func (x);
+		return f->function (x);
 	}
 	else {
 		fprintf (stderr, "Invalid return value specified. Using x-value.\n");
