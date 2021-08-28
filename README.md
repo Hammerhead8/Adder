@@ -1,23 +1,31 @@
 # Adder
-Adder is a numerical library for C similar to the GNU Scientific Library. The difference is that it only includes
+Adder is a numerical library for C/C++ similar to the GNU Scientific Library. The difference is that it only includes
 that are most useful to me, which includes complex numbers, linear algebra, and random number generation.
 This project came out of needing some of the features in GSL, but wanting an easier to use programming interface and not needing all of its features.
+
+Note that these functions have only been tested under Linux, so some functions might use features that are specific to Linux (i.e. /dev/urandom
+to seed some random number generators).
 
 # Features
 Adder is still under development and is incomplete, but the currently supported features are:
 * Matrices and vectors
+  * Matrix-vector multiplication
+  * Matrix-matrix multiplication
 * Linear algebra
   * Matrix and vector transpose
   * Matrix inverse
+  * Moore-Penrose pseudoinverse
   * Linear equation solve
+  * Overdetermined linear equation solve
+  * Linear least squares
   * Eigenvalues
+  * Singular value decomposition
   * QR factorization
   * LQ factorization
   * LU factorization
   * Vector norm
   * Matrix norm
 * Fractions
-* Complex numbers
 * Numerical integration
   * Gauss-Legendre quadrature
     * 3-point
@@ -26,17 +34,23 @@ Adder is still under development and is incomplete, but the currently supported 
     * 100-point
     * User selected number of points
   * Trapezoid Rule
-* Numerical differentiation
-  * Symetric difference quotient
-  * Five point method
-    * Center
-    * Forward
-    * Backward
+  * Simpson's Rule
 * Optimization
-  * One-dimensional unconstrained search
+  * One-dimensional search
     * Golden Section search
     * Fibbonacci search
     * Equal Area search
+* Nonlinear equation solving
+  * Methods without derivatives
+    * Bisection method
+    * Regula Falsi method
+    * Steffensen's Method
+  * Methods with derivatives
+    * Newton's Method
+    * Halley's Method
+* Interpolation
+  * Linear interpolation
+  * Polynomial interpolation
 
 <!--Linear algebra operations are performed using LAPACKE (https://performance.netlib.org/lapack/lapacke.html), a C language-->
 <!--interface for LAPACK.-->
@@ -44,7 +58,7 @@ Adder is still under development and is incomplete, but the currently supported 
 # Planned features
 * Fractions
 	* Create fraction from an arbitrary decimal
-	* Complex number fractions
+* Numerical differentiation
 * Numerical integration
 	* Simpson's Rule
 	* Monte Carlo integration
