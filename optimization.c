@@ -3,30 +3,6 @@
 #include <stdio.h>
 #include "optimization.h"
 
-/* Determine which algorithm to call and then call it */
-/*double*/
-/*linSearch (int searchMethod, adder_function *f,*/
-/*	   double a, double b, int N, double stoppingCriteria)*/
-/*{*/
-/*	double *res;*/
-
-/*	if (searchMethod == GOLDEN_SECTION) {*/
-/*		*res = goldenSectionSearch (f, a, b, stoppingCriteria);*/
-/*	}*/
-/*	else if (searchMethod == FIBONACCI) {*/
-/*		*res = fibonacciSearch (f, a, b, N, stoppingCriteria);*/
-/*	}*/
-/*	else if (searchMethod == EQUAL_AREA) {*/
-/*		*res = equalArea (f, a, b, stoppingCriteria);*/
-/*	}*/
-/*	else {*/
-/*		fprintf (stderr, "Invalid search method specified. ");*/
-/*		res = NULL;*/
-/*	}*/
-
-/*	return res;*/
-/*}*/
-
 /* Golden Section search method of a single variable function
  * retValue is used to determine if the x-value or the function value of the minimum should be returned
  * func is the function being minimized
