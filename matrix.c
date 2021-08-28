@@ -185,11 +185,11 @@ randVector (adder_vector *v)
 	fclose (fp);
 
 	/* Seed the random number generator */
-	srand48 (seed);
+	srand (seed);
 
 	/* Generate the random numbers */
 	for (i = 0; i < v->size; i++) {
-		v->vect[i] = drand48 ();
+		v->vect[i] = rand () / (double)RAND_MAX;
 	}
 
 	return 0;
@@ -460,14 +460,65 @@ randMatrix (adder_matrix *m)
 	fclose (fp);
 
 	/* Seed the random number generator */
-	srand48 (seed);
+	srand (seed);
 
 	/* Generate the random numbers */
 	for (i = 0; i < m->rows; i++) {
 		for (j = 0; j < m->columns; j++) {
-			m->mat[i * m->columns + j] = drand48 ();
+			m->mat[i * m->columns + j] = rand () / (double)RAND_MAX;
 		}
 	}
 
 	return 0;
+}
+
+/*************************************
+ * Other matrix and vector functions *
+ *************************************/
+
+/* Transpose a vector */
+void
+transposeVector (adder_vector *v)
+{
+	v->orientation *= -1;
+}
+
+/* Transpose a matrix */
+adder_matrix *
+transposeMatrix (adder_matrix *m)
+{
+	adder_matrix *tran;
+	long int i, j;
+	long int numRows, numColumns;
+
+	numRows = m->rows;
+	numColumns = m->columns;
+
+	/* Create a new matrix */
+	tran = matrixInit2 (m->orientation, numColumns, numRows);
+	if (tran == 0x00) {
+		return tran;
+	}
+
+	/* Perform the transpose */
+	for (i = 0; i < numRows; i++) {
+		for (j = 0; j < numColumns; j++) {
+			tran->mat[j * numRows + i] = m->mat[i * numColumns + j];
+		}
+	}
+
+	return tran;
+}
+
+/* Convert a matrix between row- and column-major */
+void
+convertMatrix (adder_matrix *m)
+{
+	/* Switch the orientation */
+	if (m->orientation == ROW_MAJOR) {
+		m->orientation = COLUMN_MAJOR;
+	}
+	else {
+		m->orientation = ROW_MAJOR;
+	}
 }

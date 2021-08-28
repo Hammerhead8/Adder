@@ -1,6 +1,7 @@
 /* roots.c
  * Function definitions for the root finding algorithms */
 #include "roots.h"
+#include <math.h> /* For fabs */
 
 /* Non-derivative methods */
 
@@ -64,6 +65,8 @@ regulaFalsi (adder_function *f, double lGuess, double rGuess, double tol, unsign
 	double x2; /* The next approximation */
 	double f0; /* Value of the function at x = x0 */
 	double f1; /* Value of the function at x = x1 */
+	double f2; /* Value of the function at x = x2 */
+	unsigned int i;
 
 	/* Calculate the intial values of the endpoints */
 	f0 = f->function (x0);
@@ -131,24 +134,12 @@ steffensen (adder_function *f, double guess, double tol, unsigned int iterLimit)
 		xn1 = xn - (fxn * fxn) / (f1xn - fxn);
 
 		/* Check if the tolerance for the solution has been met */
-		if ((xn - xn1) < 0) {
-			if ((xn1 - xn) < tol) {
-				xn = xn1;
-				break;
-			}
-			else {
-				xn = xn1;
-			}
+		if (fabs (xn - xn1) <= tol) {
+			break;
 		}
-		else {
-			if ((xn - xn1) < tol) {
-				xn = xn1;
-				break;
-			}
-			else {
-				xn = xn1;
-			}
-		}
+
+		/* If it hasn't then update the value of xn and repeat the loop */
+		xn = xn1;
 	}
 
 	return xn;
@@ -183,28 +174,60 @@ newton (adder_function *f, adder_function *df, double guess, double tol, unsigne
 		xn1 = xn - fxn / dfxn;
 
 		/* Check if the tolerance for the solution has been met */
-		if ((xn - xn1) < 0) {
-			if ((xn1 - xn) < tol) {
-				xn = xn1;
-				break;
-			}
-			else {
-				xn = xn1;
-			}
+		if (fabs (xn - xn1) <= tol) {
+			break;
 		}
-		else {
-			if ((xn - xn1) < tol) {
-				xn = xn1;
-				break;
-			}
-			else {
-				xn = xn1;
-			}
-		}
+
+		/* Otherewise update the value of xn and repeat the loop */
+		xn = xn1;
 	}
 
 	return xn;
 }
+
+/* Halley's Method
+ * f is the function being solved
+ * df is the first derivative of the function
+ * ddf is the second derivative of the function
+ * guess is the initial guess for the solution
+ * tol is the desired tolerance for the solution
+ * iterLimit is the maximum number of iterations
+ */
+double
+halley (adder_function *f, adder_function *df, adder_function *ddf, double guess, double tol, unsigned int iterLimit)
+{
+	double xn; /* The current x value */
+	double xnPlusOne; /* The next x value */
+	double fxn; /* The value of the function at xn */
+	double dfxn; /* The current value of the derivative of the function at xn */
+	double ddfxn; /* The current value of the second derivative of the function at xn */
+	unsigned int i;
+
+	xn = guess;
+
+	/* Iterate the algorithm */
+	for (i = 0; i < iterLimit; i++) {
+		/* Calculate the values of the function and its derivatives */
+		fxn = f->function (xn);
+		dfxn = df->function (xn);
+		ddfxn = ddf->function (xn);
+
+		/* Calculate the next value of x using Halley's Method */
+		xnPlusOne = xn - (fxn / (dfxn - (ddfxn * fxn) / (2 * dfxn)));
+
+		/* If the new and old values are within the desired tolerance then end the loop */
+		if (fabs (xn - xnPlusOne) <= tol) {
+			xn = xnPlusOne;
+			break;
+		}
+
+		/* Otherwise update the value of xn and repeat the loop */
+		xn = xnPlusOne;
+	}
+
+	return xn;
+}
+
 
 /* Other routines */
 
@@ -236,4 +259,3 @@ sign (double x, double y)
 		return 0;
 	}
 }
-

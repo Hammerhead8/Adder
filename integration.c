@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <math.h>
 #include "integration.h"
-/*#include "../rng/rng.h"*/ /* For the random number generator */
 
 /* Three point Gauss-Legendre quadrature
  * f is the function to be integrated

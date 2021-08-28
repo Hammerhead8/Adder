@@ -1,5 +1,5 @@
 # Adder
-Adder is a numerical library for C/C++ similar to the GNU Scientific Library. The difference is that it only includes
+Adder is a numerical library for C similar to the GNU Scientific Library. The difference is that it only includes
 that are most useful to me, which includes complex numbers, linear algebra, and random number generation.
 This project came out of needing some of the features in GSL, but wanting an easier to use programming interface and not needing all of its features.
 
@@ -17,6 +17,7 @@ Adder is still under development and is incomplete, but the currently supported 
   * Vector norm
   * Matrix norm
 * Fractions
+* Complex numbers
 * Numerical integration
   * Gauss-Legendre quadrature
     * 3-point
@@ -25,8 +26,14 @@ Adder is still under development and is incomplete, but the currently supported 
     * 100-point
     * User selected number of points
   * Trapezoid Rule
+* Numerical differentiation
+  * Symetric difference quotient
+  * Five point method
+    * Center
+    * Forward
+    * Backward
 * Optimization
-  * One-dimensional search
+  * One-dimensional unconstrained search
     * Golden Section search
     * Fibbonacci search
     * Equal Area search
@@ -37,7 +44,7 @@ Adder is still under development and is incomplete, but the currently supported 
 # Planned features
 * Fractions
 	* Create fraction from an arbitrary decimal
-* Numerical differentiation
+	* Complex number fractions
 * Numerical integration
 	* Simpson's Rule
 	* Monte Carlo integration
