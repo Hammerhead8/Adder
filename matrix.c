@@ -5,6 +5,8 @@
 #include <cblas.h>
 #include "matrix.h"
 
+#define min(x,y) ((x) < (y) ? (x) : (y))
+
 /* TODO:  Result matrix should match orientation of input matrix/matrices */
 
 /* Vector IO functions */
@@ -190,6 +192,46 @@ randVector (adder_vector *v)
 	/* Generate the random numbers */
 	for (i = 0; i < v->size; i++) {
 		v->vect[i] = rand () / (double)RAND_MAX;
+	}
+
+	return 0;
+}
+
+/* Generate a random vector with specified lower and upper bounds */
+int
+randVector2 (adder_vector *v, double lower, double upper)
+{
+	long int seed;
+	size_t err;
+	int i;
+	double num;
+	FILE *fp;
+
+	/* Open /dev/urandom */
+	fp = fopen ("/dev/urandom", "r");
+	if (fp == 0x00) {
+		fprintf (stderr, "Failed to open random number generator.\n");
+		return INVALID_FILE;
+	}
+
+	/* Read an int from urandom */
+	err = fread (&seed, sizeof (long int), 1, fp);
+	if (err == 0) {
+		fprintf (stderr, "Failed to read from the random number generator.\n");
+		fclose (fp);
+		return INVALID_FILE;
+	}
+
+	/* Close urandom */
+	fclose (fp);
+
+	/* Seed the random number generator */
+	srand (seed);
+
+	/* Generate the random numbers */
+	for (i = 0; i < v->size; i++) {
+		num = rand () / (double)RAND_MAX;
+		v->vect[i] = num * (upper - lower) + lower;
 	}
 
 	return 0;
@@ -521,4 +563,21 @@ convertMatrix (adder_matrix *m)
 	else {
 		m->orientation = ROW_MAJOR;
 	}
+}
+
+/* Calculate the trace of a matrix */
+double
+matrixTrace (adder_matrix *m)
+{
+	double res = 0;
+	int len;
+	int i;
+
+	len = min (m->rows, m->columns);
+
+	for (i = 0; i < len; i++) {
+		res += m->mat[i * m->columns + i];
+	}
+
+	return res;
 }
