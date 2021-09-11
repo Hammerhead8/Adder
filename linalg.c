@@ -3,7 +3,7 @@
  * This is the linear algebra part of Adder */
 #include <stdlib.h> /* For malloc and free */
 #include <math.h> /* For sqrt */
-#include <cblas-openblas.h>
+#include <cblas.h>
 #include <lapacke.h>
 #include "linalg.h"
 
