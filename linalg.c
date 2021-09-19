@@ -2,12 +2,13 @@
  * Function definitions for the prototypes in linalg.h
  * This is the linear algebra part of Adder */
 #include <stdlib.h> /* For malloc and free */
-#include <math.h> /* For sqrt */
+#include <math.h> /* For fabs */
 #include <cblas.h>
 #include <lapacke.h>
+#include "../adder_math.h"
 #include "linalg.h"
 
-/* TODO:  Singular value decomposition */
+#define max(x, y) x >= y ? x : y
 
 /* Calculate the inverse of the matrix */
 adder_matrix *
@@ -101,13 +102,16 @@ pseudoinverse (adder_matrix *m)
 	adder_matrix *sMatrix;
 	adder_matrix *vts;
 	adder_matrix *res;
-	int aRows, aColumns;
+	double *vtNew;
+	int aRows, aColumns, aDimMax;
 	int i, j;
 	int err;
 
 	/* Create a copy of m called A so m doesn't get overwritten */
 	aRows = m->rows;
 	aColumns = m->columns;
+	aDimMax = max (aRows, aColumns);
+
 	A = matrixInit (m->orientation, aRows, aColumns, m->mat);
 	if (A == 0x00) {
 		return 0x00;
@@ -121,21 +125,27 @@ pseudoinverse (adder_matrix *m)
 	}
 
 	/* Create the s vector, which holds the singular values of m */
-	if (aRows <= aColumns) {
-		s = vectorInit2 (COLUMN_VECTOR, aRows);
-	}
-	else {
-		s = vectorInit2 (COLUMN_VECTOR, aColumns);
-	}
-
+	s = vectorInit2 (COLUMN_VECTOR, aColumns);
 	if (s == 0x00) {
 		deleteMatrix (A);
 		deleteMatrix (u);
 		return 0x00;
 	}
+/*	if (aRows <= aColumns) {*/
+/*		s = vectorInit2 (COLUMN_VECTOR, aRows);*/
+/*	}*/
+/*	else {*/
+/*		s = vectorInit2 (COLUMN_VECTOR, aColumns);*/
+/*	}*/
+
+/*	if (s == 0x00) {*/
+/*		deleteMatrix (A);*/
+/*		deleteMatrix (u);*/
+/*		return 0x00;*/
+/*	}*/
 
 	/* Create sMatrix, which is s represented as a diagonal matrix */
-	sMatrix = matrixInit2 (m->orientation, s->size, s->size);
+	sMatrix = matrixInit2 (m->orientation, aRows, aColumns);
 	if (sMatrix == 0x00) {
 		deleteMatrix (A);
 		deleteMatrix (u);
@@ -153,7 +163,7 @@ pseudoinverse (adder_matrix *m)
 	}
 
 	/* Create the vts matrix, which is the result of VT * s */
-	vts = matrixInit2 (m->orientation, vt->rows, vt->columns);
+	vts = matrixInit2 (m->orientation, aColumns, aRows);
 	if (vts == 0x00) {
 		deleteMatrix (A);
 		deleteMatrix (u);
@@ -164,7 +174,7 @@ pseudoinverse (adder_matrix *m)
 	}
 
 	/* Create the solution matrix, which is the result of vts * U */
-	res = matrixInit2 (m->orientation, vts->rows, vts->columns);
+	res = matrixInit2 (m->orientation, aColumns, aRows);
 	if (res == 0x00) {
 		deleteMatrix (A);
 		deleteMatrix (u);
@@ -227,6 +237,10 @@ pseudoinverse (adder_matrix *m)
 				deleteMatrix (A);
 				deleteMatrix (u);
 				deleteVector (s);
+				deleteMatrix (sMatrix);
+				deleteMatrix (vt);
+				deleteMatrix (vts);
+				deleteMatrix (res);
 				return 0x00;
 			}
 
@@ -256,6 +270,8 @@ pseudoinverse (adder_matrix *m)
 		}
 	}
 
+	vtNew = vt->mat;
+
 	/* Convert s to a diagonal matrix whose elements are the reciprocals of those in s */
 	for (i = 0; i < s->size; i++) {
 		for (j = 0; j < s->size; j++) {
@@ -275,21 +291,24 @@ pseudoinverse (adder_matrix *m)
 		}
 	}
 
+	vt->mat = vtNew;
+	vtNew = 0x00;
+
 	printVector (s);
 	printf ("\n");
 
 	printMatrix (sMatrix);
 	printf ("\n");
 
-	/* Multiply V * S = VTS, followed by VTS * U = res */
+	/* Multiply VT' * S' = VTS, followed by VTS * U = res */
 	if (m->orientation == ROW_MAJOR) {
-		cblas_dgemm (CblasRowMajor, CblasTrans, CblasNoTrans, vt->rows, sMatrix->columns, vt->columns, 1.0, vt->mat, vt->columns, sMatrix->mat, sMatrix->columns, 0.0, vts->mat, vts->columns);
+		cblas_dgemm (CblasRowMajor, CblasTrans, CblasTrans, vt->rows, sMatrix->columns, vt->columns, 1.0, vt->mat, vt->columns, sMatrix->mat, sMatrix->columns, 0.0, vts->mat, vts->columns);
 
 		cblas_dgemm (CblasRowMajor, CblasNoTrans, CblasTrans, vts->rows, u->columns, vts->columns, 1.0, vts->mat, vts->columns, u->mat, u->columns, 0.0, res->mat, res->columns);
 	}
 
 	else {
-		cblas_dgemm (CblasColMajor, CblasTrans, CblasNoTrans, vt->rows, sMatrix->columns, vt->columns, 1.0, vt->mat, vt->rows, sMatrix->mat, sMatrix->rows, 0.0, vts->mat, vts->rows);
+		cblas_dgemm (CblasColMajor, CblasNoTrans, CblasTrans, vt->rows, sMatrix->columns, vt->columns, 1.0, vt->mat, vt->rows, sMatrix->mat, sMatrix->rows, 0.0, vts->mat, vts->rows);
 
 		cblas_dgemm (CblasColMajor, CblasNoTrans, CblasTrans, vts->rows, u->columns, vts->columns, 1.0, vts->mat, vts->rows, u->mat, u->rows, 0.0, res->mat, res->rows);
 	}
@@ -437,7 +456,12 @@ odLinearSolve (adder_matrix *A, adder_vector *b)
 	}
 }
 
-/* Solve a linear least squares problem */
+/* Solve a linear least squares problem.
+ * The coefficients for the solution are stored
+ * in descending order of degree. For example, if
+ * a quadratic solution is found, then the solution
+ * vector R = {r1, r2, r3} form the polynomial
+ * r1 * x^2 + r2 * x + r3 */
 adder_vector *
 linearLeastSquares (adder_matrix *M, adder_vector *b)
 {
