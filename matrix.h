@@ -43,15 +43,6 @@ typedef struct
 	int orientation;
 } adder_matrix;
 
-/* Jacobian matrix definition
- * The orientation will always be row major */
-/*typedef struct
-{
-	adder_function *J;
-	int rows;
-	int columns;
-} adder_jacobian; */
-
 /* Vector IO functions */
 adder_vector * vectorInit (int orient, int numElements, double *values);
 adder_vector * vectorInit2 (int orient, int numElements);
@@ -62,7 +53,9 @@ void printVector (adder_vector *v);
 void vectorZeros (adder_vector *v);
 void vectorOnes (adder_vector *v);
 int randVector (adder_vector *v);
-int randVector2 (adder_vector *v, double lower, double upper);
+
+/* Other vector functions */
+adder_vector * vectorTranspose (adder_vector *v);
 
 /* Matrix IO functions */
 adder_matrix * matrixInit (int orient, int numRows, int numColumns, double *values);
@@ -70,21 +63,17 @@ adder_matrix *matrixInit2 (int orient, int numRows, int numcolumns);
 void deleteMatrix (adder_matrix *m);
 void printMatrix (adder_matrix *m);
 
+/* Matrix arithmetic functions */
+adder_vector * mvMultiply (adder_matrix *M, adder_vector *v);
+adder_matrix * mmMultiply (adder_matrix *A, adder_matrix *B);
+
 /* Matrix setting functions */
 void eye (adder_matrix *m, long int n);
 void matrixZeros (adder_matrix *m);
 void matrixOnes (adder_matrix *m);
 int randMatrix (adder_matrix *m);
-int randMatrix2 (adder_matrix *m, double lower, double upper);
 
-/* Matrix multiplication functions */
-adder_vector * mvMultiply (adder_matrix *M, adder_vector *v);
-adder_matrix * mmMultiply (adder_matrix *A, adder_matrix *B);
-
-/* Other matrix and vector functions */
-void transposeVector (adder_vector *v);
-adder_matrix * transposeMatrix (adder_matrix *m);
-void convertMatrix (adder_matrix *m); /* Convert a matrix between row- and column-major */
-double matrixTrace (adder_matrix *m);
+/* Other matrix functions */
+adder_matrix * matrixTranspose (adder_matrix *m);
 
 #endif
