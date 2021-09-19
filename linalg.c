@@ -7,6 +7,7 @@
 #include <lapacke.h>
 #include "../adder_math.h"
 #include "linalg.h"
+#include "matrix.h"
 
 #define max(x, y) x >= y ? x : y
 
@@ -105,83 +106,160 @@ pseudoinverse (adder_matrix *m)
 	double *vtNew;
 	int aRows, aColumns, aDimMax;
 	int i, j;
+	int mTrans; /* Flag to check if M was transposed */
 	int err;
 
-	/* Create a copy of m called A so m doesn't get overwritten */
-	aRows = m->rows;
-	aColumns = m->columns;
-	aDimMax = max (aRows, aColumns);
+	/* Check if the input matrix has fewer rows than columns.
+	 * If it does then transpose it */
+	if (m->rows < m->columns) {
+		mTrans = 1;
 
+		m = matrixTranspose (m);
+		if (m == 0x00) {
+			return 0x00;
+		}
+
+
+		aRows = m->rows;
+		aColumns = m->columns;
+		aDimMax = max (aRows, aColumns);
+
+		/* Create a matrix called u, which the orthogonal matrix to m */
+		u = matrixInit2 (m->orientation, aRows, aRows);
+		if (u == 0x00) {
+			deleteMatrix (A);
+			return 0x00;
+		}
+
+		/* Create the s vector, which holds the singular values of m */
+		s = vectorInit2 (COLUMN_VECTOR, aColumns);
+		if (s == 0x00) {
+			deleteMatrix (A);
+			deleteMatrix (u);
+			return 0x00;
+		}
+
+		/* Create sMatrix, which is s represented as a diagonal matrix */
+		sMatrix = matrixInit2 (m->orientation, aRows, aColumns);
+		if (sMatrix == 0x00) {
+			deleteMatrix (A);
+			deleteMatrix (u);
+			deleteVector (s);
+			return 0x00;
+		}
+
+		/* Create the vt matrix */
+		vt = matrixInit2 (m->orientation, aColumns, aColumns);
+		if (vt == 0x00) {
+			deleteMatrix (A);
+			deleteMatrix (u);
+			deleteVector (s);
+			return 0x00;
+		}
+
+		/* Create the vts matrix, which is the result of VT * s */
+		vts = matrixInit2 (m->orientation, aColumns, aRows);
+		if (vts == 0x00) {
+			deleteMatrix (A);
+			deleteMatrix (u);
+			deleteVector (s);
+			deleteMatrix (sMatrix);
+			deleteMatrix (vt);
+			return 0x00;
+		}
+
+		/* Create the solution matrix, which is the result of vts * U */
+		res = matrixInit2 (m->orientation, aColumns, aRows);
+		if (res == 0x00) {
+			deleteMatrix (A);
+			deleteMatrix (u);
+			deleteVector (s);
+			deleteMatrix (sMatrix);
+			deleteMatrix (vt);
+			deleteMatrix (vts);
+			return 0x00;
+		}
+
+	}
+
+	else {
+
+		aRows = m->rows;
+		aColumns = m->columns;
+		aDimMax = max (aRows, aColumns);
+
+		/* Create a matrix called u, which the orthogonal matrix to m */
+		u = matrixInit2 (m->orientation, aRows, aRows);
+		if (u == 0x00) {
+			deleteMatrix (A);
+			return 0x00;
+		}
+
+		/* Create the s vector, which holds the singular values of m */
+		s = vectorInit2 (COLUMN_VECTOR, aColumns);
+		if (s == 0x00) {
+			deleteMatrix (A);
+			deleteMatrix (u);
+			return 0x00;
+		}
+	/*	if (aRows <= aColumns) {*/
+	/*		s = vectorInit2 (COLUMN_VECTOR, aRows);*/
+	/*	}*/
+	/*	else {*/
+	/*		s = vectorInit2 (COLUMN_VECTOR, aColumns);*/
+	/*	}*/
+
+	/*	if (s == 0x00) {*/
+	/*		deleteMatrix (A);*/
+	/*		deleteMatrix (u);*/
+	/*		return 0x00;*/
+	/*	}*/
+
+		/* Create sMatrix, which is s represented as a diagonal matrix */
+		sMatrix = matrixInit2 (m->orientation, aRows, aColumns);
+		if (sMatrix == 0x00) {
+			deleteMatrix (A);
+			deleteMatrix (u);
+			deleteVector (s);
+			return 0x00;
+		}
+
+		/* Create the vt matrix */
+		vt = matrixInit2 (m->orientation, aColumns, aColumns);
+		if (vt == 0x00) {
+			deleteMatrix (A);
+			deleteMatrix (u);
+			deleteVector (s);
+			return 0x00;
+		}
+
+		/* Create the vts matrix, which is the result of VT * s */
+		vts = matrixInit2 (m->orientation, aColumns, aRows);
+		if (vts == 0x00) {
+			deleteMatrix (A);
+			deleteMatrix (u);
+			deleteVector (s);
+			deleteMatrix (sMatrix);
+			deleteMatrix (vt);
+			return 0x00;
+		}
+
+		/* Create the solution matrix, which is the result of vts * U */
+		res = matrixInit2 (m->orientation, aColumns, aRows);
+		if (res == 0x00) {
+			deleteMatrix (A);
+			deleteMatrix (u);
+			deleteVector (s);
+			deleteMatrix (sMatrix);
+			deleteMatrix (vt);
+			deleteMatrix (vts);
+			return 0x00;
+		}
+	}
+
+	/* Create a copy of m called A so m doesn't get overwritten */
 	A = matrixInit (m->orientation, aRows, aColumns, m->mat);
 	if (A == 0x00) {
-		return 0x00;
-	}
-
-	/* Create a matrix called u, which the orthogonal matrix to m */
-	u = matrixInit2 (m->orientation, aRows, aRows);
-	if (u == 0x00) {
-		deleteMatrix (A);
-		return 0x00;
-	}
-
-	/* Create the s vector, which holds the singular values of m */
-	s = vectorInit2 (COLUMN_VECTOR, aColumns);
-	if (s == 0x00) {
-		deleteMatrix (A);
-		deleteMatrix (u);
-		return 0x00;
-	}
-/*	if (aRows <= aColumns) {*/
-/*		s = vectorInit2 (COLUMN_VECTOR, aRows);*/
-/*	}*/
-/*	else {*/
-/*		s = vectorInit2 (COLUMN_VECTOR, aColumns);*/
-/*	}*/
-
-/*	if (s == 0x00) {*/
-/*		deleteMatrix (A);*/
-/*		deleteMatrix (u);*/
-/*		return 0x00;*/
-/*	}*/
-
-	/* Create sMatrix, which is s represented as a diagonal matrix */
-	sMatrix = matrixInit2 (m->orientation, aRows, aColumns);
-	if (sMatrix == 0x00) {
-		deleteMatrix (A);
-		deleteMatrix (u);
-		deleteVector (s);
-		return 0x00;
-	}
-
-	/* Create the vt matrix */
-	vt = matrixInit2 (m->orientation, aColumns, aColumns);
-	if (vt == 0x00) {
-		deleteMatrix (A);
-		deleteMatrix (u);
-		deleteVector (s);
-		return 0x00;
-	}
-
-	/* Create the vts matrix, which is the result of VT * s */
-	vts = matrixInit2 (m->orientation, aColumns, aRows);
-	if (vts == 0x00) {
-		deleteMatrix (A);
-		deleteMatrix (u);
-		deleteVector (s);
-		deleteMatrix (sMatrix);
-		deleteMatrix (vt);
-		return 0x00;
-	}
-
-	/* Create the solution matrix, which is the result of vts * U */
-	res = matrixInit2 (m->orientation, aColumns, aRows);
-	if (res == 0x00) {
-		deleteMatrix (A);
-		deleteMatrix (u);
-		deleteVector (s);
-		deleteMatrix (sMatrix);
-		deleteMatrix (vt);
-		deleteMatrix (vts);
 		return 0x00;
 	}
 
@@ -294,12 +372,6 @@ pseudoinverse (adder_matrix *m)
 	vt->mat = vtNew;
 	vtNew = 0x00;
 
-	printVector (s);
-	printf ("\n");
-
-	printMatrix (sMatrix);
-	printf ("\n");
-
 	/* Multiply VT' * S' = VTS, followed by VTS * U = res */
 	if (m->orientation == ROW_MAJOR) {
 		cblas_dgemm (CblasRowMajor, CblasTrans, CblasTrans, vt->rows, sMatrix->columns, vt->columns, 1.0, vt->mat, vt->columns, sMatrix->mat, sMatrix->columns, 0.0, vts->mat, vts->columns);
@@ -311,6 +383,12 @@ pseudoinverse (adder_matrix *m)
 		cblas_dgemm (CblasColMajor, CblasNoTrans, CblasTrans, vt->rows, sMatrix->columns, vt->columns, 1.0, vt->mat, vt->rows, sMatrix->mat, sMatrix->rows, 0.0, vts->mat, vts->rows);
 
 		cblas_dgemm (CblasColMajor, CblasNoTrans, CblasTrans, vts->rows, u->columns, vts->columns, 1.0, vts->mat, vts->rows, u->mat, u->rows, 0.0, res->mat, res->rows);
+	}
+
+	/* The last step is to transpose the solution matrix if
+	 * the input matrix was transposed */
+	if (mTrans == 1) {
+		res = matrixTranspose (res);
 	}
 
 	/* Delete the vectors and matrices used in intermediate calculations */
