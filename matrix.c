@@ -72,18 +72,6 @@ vectorInit2 (int orient, int numElements)
 
 	v->size = numElements;
 
-	/* Set the orientation */
-	if (orient == ROW_VECTOR) {
-		v->orientation = ROW_VECTOR;
-	}
-	else if (orient == COLUMN_VECTOR) {
-		v->orientation = COLUMN_VECTOR;
-	}
-	else {
-		fprintf (stderr, "Invalid orientation.\n");
-		return NULL;
-	}
-
 	return v;
 }
 
@@ -195,6 +183,25 @@ randVector (adder_vector *v)
 	return 0;
 }
 
+/**************************
+ * Other vector functions *
+ **************************/
+
+/* Transpose a vector */
+adder_vector *
+vectorTranspose (adder_vector *v)
+{
+	adder_vector *T;
+
+	T = vectorInit (-1 * v->orientation, v->size, v->vect);
+	if (T == 0x00) {
+		fprintf (stderr, "Cannot create transpose vector.\n");
+		return 0x00;
+	}
+
+	return T;
+}
+
 /********************
  * Matrix functions *
 *********************/
@@ -272,6 +279,7 @@ matrixInit2 (int orient, int numRows, int numColumns)
 
 	m->mat = malloc (numRows * numColumns * sizeof (double));
 	if (m->mat == NULL) {
+		fprintf (stderr, "Failed to create matrix.\n");
 		free (m);
 		return NULL;
 	}
@@ -472,53 +480,34 @@ randMatrix (adder_matrix *m)
 	return 0;
 }
 
-/*************************************
- * Other matrix and vector functions *
- *************************************/
-
-/* Transpose a vector */
-void
-transposeVector (adder_vector *v)
-{
-	v->orientation *= -1;
-}
+/**************************
+ * Other matrix functions *
+ **************************/
 
 /* Transpose a matrix */
 adder_matrix *
-transposeMatrix (adder_matrix *m)
+matrixTranspose (adder_matrix *m)
 {
-	adder_matrix *tran;
+	adder_matrix *T;
 	long int i, j;
-	long int numRows, numColumns;
 
-	numRows = m->rows;
-	numColumns = m->columns;
-
-	/* Create a new matrix */
-	tran = matrixInit2 (m->orientation, numColumns, numRows);
-	if (tran == 0x00) {
-		return tran;
+	T = matrixInit2 (ROW_MAJOR, m->columns, m->rows);
+	if (T == 0x00) {
+		fprintf (stderr, "Failed to create transpose matrix.\n");
+		return 0x00;
 	}
 
-	/* Perform the transpose */
-	for (i = 0; i < numRows; i++) {
-		for (j = 0; j < numColumns; j++) {
-			tran->mat[j * numRows + i] = m->mat[i * numColumns + j];
+	/* Perform the transposition */
+	for (i = 0; i < m->rows; i++) {
+		for (j = 0; j < m->columns; j++) {
+			T->mat[j * m->rows + i] = m->mat[i * m->columns + j];
 		}
 	}
 
-	return tran;
-}
+	/* Switch the values of rows and columns */
+	m->rows += m->columns;
+	m->columns = m->rows - m->columns;
+	m->rows -= m->columns;
 
-/* Convert a matrix between row- and column-major */
-void
-convertMatrix (adder_matrix *m)
-{
-	/* Switch the orientation */
-	if (m->orientation == ROW_MAJOR) {
-		m->orientation = COLUMN_MAJOR;
-	}
-	else {
-		m->orientation = ROW_MAJOR;
-	}
+	return T;
 }
