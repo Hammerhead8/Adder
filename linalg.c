@@ -2,10 +2,11 @@
  * Function definitions for the prototypes in linalg.h
  * This is the linear algebra part of Adder */
 #include <stdlib.h> /* For malloc and free */
+#include <string.h> /* For memcpy */
 #include <math.h> /* For fabs */
 #include <cblas.h>
 #include <lapacke.h>
-#include "../adder_math.h"
+#include "adder_math.h"
 #include "linalg.h"
 #include "matrix.h"
 
@@ -490,8 +491,11 @@ odLinearSolve (adder_matrix *A, adder_vector *b)
 	int err;
 	adder_vector *res;
 
+	res = vectorInit2 (COLUMN_VECTOR, b->size);
+
 	/* Create a result matrix to prevent overwriting b */
-	res = b;
+//	res = b;
+	memcpy (res->vect, b->vect, sizeof (double) * b->size);
 
 	/* If the matrix is row major */
 	if (A->orientation == ROW_MAJOR) {
@@ -499,7 +503,9 @@ odLinearSolve (adder_matrix *A, adder_vector *b)
 
 		/* If no errors occured then return the solution vector */
 		if (err == 0 ) {
-			return b;
+			res->vect = realloc (res->vect, sizeof (double) * A->columns);
+			res->size = A->columns;
+			return res;
 		}
 
 		else if (err < 0) {
@@ -519,7 +525,9 @@ odLinearSolve (adder_matrix *A, adder_vector *b)
 
 		/* If now errors occured then return the solution vector */
 		if (err == 0) {
-			return b;
+			res->vect = realloc (res->vect, sizeof (double) * A->columns);
+			res->size = A->columns;
+			return res;
 		}
 
 		else if (err < 0) {
