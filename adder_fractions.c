@@ -5,7 +5,7 @@
 #include <stddef.h>
 #include <string.h> /* For strlen */
 #include <math.h> /* For pow */
-#include "fractions.h"
+#include "adder_fractions.h"
 
 /******************
  * Real fractions *

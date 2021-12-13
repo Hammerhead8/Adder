@@ -2,7 +2,7 @@
  * Function definitions for the numerical differentiation routines.
  *
  * TODO:  Implement directional derivatives for multi-dimensional functions */
-#include "differentiate.h"
+#include "adder_differentiate.h"
 
 /* Differentiate a function of one variable using the symmetric
  * difference quotient.

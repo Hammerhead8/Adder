@@ -2,8 +2,8 @@
  *
  * This serves as an extension to matrix.h and includes linear algebra
  * routines for matrices and vectors using OpenBLAS and LAPACKE */
-#ifndef LINALG_H
-#define LINALG_H
+#ifndef ADDER_LINALG_H
+#define ADDER_LINALG_H
 
 #include "adder_matrix.h"
 

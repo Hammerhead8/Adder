@@ -3,8 +3,8 @@
  * Integration can be done using Gauss-Legendre quadrature or
  * the Trapezoidal rule.
  * All integration routines use double precision */
-#ifndef INTEGRATION_H
-#define INTEGRATION_H
+#ifndef ADDER_INTEGRATION_H
+#define ADDER_INTEGRATION_H
 
 #include "adder_math.h" /* For adder_function */
 

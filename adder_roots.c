@@ -1,7 +1,7 @@
 /* roots.c
  * Function definitions for the root finding algorithms */
-#include "roots.h"
 #include <math.h> /* For fabs */
+#include "adder_roots.h"
 
 /* Non-derivative methods */
 

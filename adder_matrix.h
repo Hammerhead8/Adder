@@ -1,5 +1,5 @@
-#ifndef MATRIX_H
-#define MATRIX_H
+#ifndef ADDER_MATRIX_H
+#define ADDER_MATRIX_H
 
 enum
 ERRORS

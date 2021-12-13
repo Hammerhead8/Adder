@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h> /* For malloc and free */
 #include <math.h> /* For sqrt and log */
-#include "complex.h"
+#include "adder_complex.h"
 
 #define M_PI 3.14159265358979323846
 

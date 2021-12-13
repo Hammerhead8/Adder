@@ -2,8 +2,8 @@
  * type definitions and function prototypes for complex numbers
  * Both rectangular and polar numbers are supported
  * part of the Adder library */
-#ifndef COMPLEX_H
-#define COMPLEX_H
+#ifndef ADDER_COMPLEX_H
+#define ADDER_COMPLEX_H
 
 enum
 {

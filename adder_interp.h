@@ -1,8 +1,8 @@
 /* interp.h
  * Contains function prototypes and stuctures for interpolation routines */
 
-#ifndef INTERPOLATE_H
-#define INTERPOLATE_H
+#ifndef ADDER_INTERPOLATE_H
+#define ADDER_INTERPOLATE_H
 
 #include "adder_math.h" /* For adder_function */
 

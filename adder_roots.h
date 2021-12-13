@@ -2,8 +2,8 @@
  * Defines function prototypes for root finding algorithms.
  * Systems of linear equations are solving using the routines in linalg.h
  */
-#ifndef ROOTS_H
-#define ROOTS_H
+#ifndef ADDER_ROOTS_H
+#define ADDER_ROOTS_H
 
 #include "adder_math.h" /* For adder_function */
 

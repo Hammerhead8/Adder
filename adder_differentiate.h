@@ -2,8 +2,8 @@
  * Numerical differentiation routines for Adder.
  *
  * TODO:  Implement directional derivatives for multi-dimensional functions */
-#ifndef DIFFERENTIATE_H
-#define DIFFERENTIATE_H
+#ifndef ADDER_DIFFERENTIATE_H
+#define ADDER_DIFFERENTIATE_H
 
 #include "adder_math.h"
 

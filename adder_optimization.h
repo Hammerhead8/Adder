@@ -2,8 +2,8 @@
  *
  * Contains function prototypes for optimization routines */
 
-#ifndef OPTIMIZATION_H
-#define OPTIMIZATION_H
+#ifndef ADDER_OPTIMIZATION_H
+#define ADDER_OPTIMIZATION_H
 
 #include "adder_math.h"
 
