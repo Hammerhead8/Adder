@@ -5,7 +5,7 @@
 #ifndef ADDER_LINALG_H
 #define ADDER_LINALG_H
 
-#include "matrix.h"
+#include "adder_matrix.h"
 
 /* Extra matrix functions */
 adder_matrix * inverse (adder_matrix *m);
