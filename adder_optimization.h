@@ -5,7 +5,7 @@
 #ifndef OPTIMIZATION_H
 #define OPTIMIZATION_H
 
-#include "../adder_math.h"
+#include "adder_math.h"
 
 enum
 Errors
