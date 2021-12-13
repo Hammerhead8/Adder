@@ -2,8 +2,6 @@
  * Function definitions for the prototypes in fractions.h */
 #include <stdio.h>
 #include <stdlib.h> /* For malloc and free */
-#include <stddef.h>
-#include <string.h> /* For strlen */
 #include <math.h> /* For pow */
 #include "adder_fractions.h"
 
