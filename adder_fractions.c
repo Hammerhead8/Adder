@@ -2,14 +2,14 @@
  * Function definitions for the prototypes in fractions.h */
 #include <stdlib.h>
 #include <math.h> /* For pow */
-#include "fractions.h"
+#include "adder_fractions.h"
 
 /* IO functions */
 /* Allocate the memory for a new fraction */
 adder_fraction *
 newFraction (long int numerator, long int denominator)
 {
-	adder_fraction f;
+	adder_fraction *f;
 	f = malloc (sizeof (adder_fraction));
 	if (f == NULL) {
 		return f;
@@ -24,6 +24,8 @@ newFraction (long int numerator, long int denominator)
 		f->numer = numerator;
 		f->denom = denominator;
 	}
+
+	return f;
 }
 
 /* Deallocate the memory for the fraction */

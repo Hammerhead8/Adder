@@ -1,5 +1,5 @@
-#ifndef FRACTIONS_H
-#define FRACTIONS_H
+#ifndef ADDER_FRACTIONS_H
+#define ADDER_FRACTIONS_H
 
 /* Fraction type definition */
 typedef struct

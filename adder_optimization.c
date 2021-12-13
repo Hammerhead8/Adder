@@ -1,7 +1,7 @@
 /* optimization.c
  * Function definitions for optimization.c */
 #include <stdio.h>
-#include "optimization.h"
+#include "adder_optimization.h"
 
 /* Golden Section search method of a single variable function
  * retValue is used to determine if the x-value or the function value of the minimum should be returned

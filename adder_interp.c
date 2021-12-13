@@ -4,9 +4,9 @@
 
 #include <stdlib.h> /* For malloc and free */
 #include <math.h> /* For pow */
-#include "interp.h"
-#include "matrix.h"
-#include "linalg.h"
+#include "adder_interp.h"
+#include "adder_matrix.h"
+#include "adder_linalg.h"
 
 /* Linear interpolation.
  * This is defined as calculating y = y0 + (x2 - x0) * ((y1 - y0) / (x1 - x0))

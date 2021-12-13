@@ -7,8 +7,8 @@
 #include <cblas.h>
 #include <lapacke.h>
 #include "adder_math.h"
-#include "linalg.h"
-#include "matrix.h"
+#include "adder_matrix.h"
+#include "adder_linalg.h"
 
 #define max(x, y) x >= y ? x : y
 
