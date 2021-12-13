@@ -31,6 +31,8 @@ newFraction (long int numerator, long int denominator)
 		f->numer = numerator;
 		f->denom = denominator;
 	}
+
+	return f;
 }
 
 /* Create a fraction from a decimal number given as a string */
