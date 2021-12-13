@@ -1,8 +1,13 @@
 /* fractions.c
  * Function definitions for the prototypes in fractions.h */
-#include <stdlib.h>
+#include <stdio.h>
+#include <stdlib.h> /* For malloc and free */
 #include <math.h> /* For pow */
 #include "adder_fractions.h"
+
+/******************
+ * Real fractions *
+ ******************/
 
 /* IO functions */
 /* Allocate the memory for a new fraction */
@@ -37,7 +42,7 @@ deleteFraction (adder_fraction *f)
 
 /* Print the fraction */
 void
-print (adder_fraction *f)
+printFraction (adder_fraction *f)
 {
 	printf ("%ld/%ld\n", f->numer, f->denom);
 }
@@ -125,8 +130,8 @@ subFractions (adder_fraction *diff, adder_fraction *f1, adder_fraction *f2)
 	numerator2 = f2->numer * N2;
 
 	/* Perform the subtraction */
-	sum->numer = numerator1 - numerator2;
-	sum->denom = lcm;
+	diff->numer = numerator1 - numerator2;
+	diff->denom = lcm;
 }
 
 /* Multiply two fractions */
