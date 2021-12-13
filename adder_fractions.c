@@ -30,7 +30,7 @@ newFraction (long int numerator, long int denominator)
 
 /* Deallocate the memory for the fraction */
 void
-deleteadder_fraction (adder_fraction *f)
+deleteFraction (adder_fraction *f)
 {
 	free (f);
 }
