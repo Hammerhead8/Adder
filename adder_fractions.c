@@ -176,6 +176,8 @@ simplify (adder_fraction *f)
 {
 	long int gcd;
 
+	/* Calculate the GCD of the numerator and denominator */
+
 	if (f->numer == 0 || f->numer == 1) {
 		return;
 	}
@@ -188,14 +190,18 @@ simplify (adder_fraction *f)
 		gcd = calcGCD (f->numer, f->denom);
 	}
 
+	/* If the GCD is 1 then the fraction can't be simplified */
 	if (gcd == 1) {
 		return;
 	}
-	else {
+
+	/* Otherwise simplify by dividing the numerator and denominator by the GCD */
+	else 
 		f->numer /= gcd;
 		f->denom /= gcd;
 	}
 }
+
 /* Calculate the GCD using Euler's Method */
 long int
 calcGCD (long int a, long int b)
