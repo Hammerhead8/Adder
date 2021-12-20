@@ -176,9 +176,14 @@ simplify (adder_fraction *f)
 {
 	long int gcd;
 
-	if (f->numer < 0 && f->denom > 0) {
-		gcd = calcGCD (-1 * f->numer, f->denom);
+	if (f->numer == 0 || f->numer == 1) {
+		return;
 	}
+
+	else if (f->numer < 0 && f->denom > 0) {
+		gdc = calcGCD (-1 * f->numer, f->denom);
+	}
+
 	else {
 		gcd = calcGCD (f->numer, f->denom);
 	}
