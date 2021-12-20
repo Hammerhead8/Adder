@@ -169,14 +169,15 @@ power (adder_fraction *f, long int exponent)
 	f->denom = pow (f->denom, (double)exponent);
 }
 
-
 /* Other functions */
 /* Simplify the fraction */
 void
 simplify (adder_fraction *f)
 {
 	long int gcd;
-	
+
+	/* Calculate the GCD of the numerator and denominator */
+
 	if (f->numer == 0 || f->numer == 1) {
 		return;
 	}
@@ -184,13 +185,17 @@ simplify (adder_fraction *f)
 	else if (f->numer < 0 && f->denom > 0) {
 		gcd = calcGCD (-1 * f->numer, f->denom);
 	}
+
 	else {
 		gcd = calcGCD (f->numer, f->denom);
 	}
 
+	/* If the GCD is 1 then the fraction can't be simplified */
 	if (gcd == 1) {
 		return;
 	}
+
+	/* Otherwise simplify by dividing the numerator and denominator by the GCD */
 	else {
 		f->numer /= gcd;
 		f->denom /= gcd;
