@@ -183,7 +183,7 @@ simplify (adder_fraction *f)
 	}
 
 	else if (f->numer < 0 && f->denom > 0) {
-		gdc = calcGCD (-1 * f->numer, f->denom);
+		gcd = calcGCD (-1 * f->numer, f->denom);
 	}
 
 	else {
@@ -196,7 +196,7 @@ simplify (adder_fraction *f)
 	}
 
 	/* Otherwise simplify by dividing the numerator and denominator by the GCD */
-	else 
+	else {
 		f->numer /= gcd;
 		f->denom /= gcd;
 	}
