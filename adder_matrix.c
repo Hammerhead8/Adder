@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <cblas.h>
-#include "matrix.h"
+#include "adder_matrix.h"
 
 /* TODO:  Result matrix should match orientation of input matrix/matrices */
 
