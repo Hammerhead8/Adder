@@ -71,7 +71,7 @@ void vectorOnes (adder_vector *v);
 int randVector (adder_vector *v);
 
 /* Other vector functions */
-adder_vector * vectorTranspose (adder_vector *v);
+void vectorTranspose (adder_vector *v);
 void complexVectorTranspose (adder_complex_vector *z);
 
 /* Matrix IO functions */

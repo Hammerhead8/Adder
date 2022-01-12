@@ -310,18 +310,10 @@ randVector (adder_vector *v)
  **************************/
 
 /* Transpose a real-valued vector */
-adder_vector *
+void
 vectorTranspose (adder_vector *v)
 {
-	adder_vector *T;
-
-	T = vectorInit (-1 * v->orientation, v->size, v->vect);
-	if (T == 0x00) {
-		fprintf (stderr, "Cannot create transpose vector.\n");
-		return 0x00;
-	}
-
-	return T;
+	v->orientation *= -1;
 }
 
 /* Transpose a complex-valued vector */
