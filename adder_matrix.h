@@ -1,5 +1,7 @@
-#ifndef ADDER_MATRIX_H
-#define ADDER_MATRIX_H
+#ifndef MATRIX_H
+#define MATRIX_H
+
+#include "complex.h"
 
 enum
 ERRORS
@@ -34,6 +36,14 @@ typedef struct
 	int orientation;
 } adder_vector;
 
+/* Complex vector type definition */
+typedef struct
+{
+	adder_complex_rect *vect;
+	int size;
+	int orientation;
+} adder_complex_vector;
+
 /* Matrix type definition */
 typedef struct
 {
@@ -49,13 +59,20 @@ adder_vector * vectorInit2 (int orient, int numElements);
 void deleteVector (adder_vector *v);
 void printVector (adder_vector *v);
 
+/* Complex vector IO functions */
+adder_complex_vector * complexVectorInit (int orient, int numElements, double *realValues, double *imagValues);
+adder_complex_vector * complexVectorInit2 (int orient, int numElements);
+void deleteComplexVector (adder_complex_vector *z);
+void printComplexVector (adder_complex_vector *z);
+
 /* Vector setting functions */
 void vectorZeros (adder_vector *v);
 void vectorOnes (adder_vector *v);
 int randVector (adder_vector *v);
 
 /* Other vector functions */
-adder_vector * vectorTranspose (adder_vector *v);
+void vectorTranspose (adder_vector *v);
+void complexVectorTranspose (adder_complex_vector *z);
 
 /* Matrix IO functions */
 adder_matrix * matrixInit (int orient, int numRows, int numColumns, double *values);

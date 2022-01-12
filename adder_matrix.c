@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <cblas.h>
-#include "adder_matrix.h"
+#include "matrix.h"
 
 /* TODO:  Result matrix should match orientation of input matrix/matrices */
 
@@ -123,6 +123,128 @@ printVector (adder_vector *v)
 	}
 }
 
+/* Complex vector IO functions */
+adder_complex_vector *
+complexVectorInit (int orient, int numElements, double *realValues, double *imagValues)
+{
+	adder_complex_vector *z;
+	int i;
+	
+    /* Allocate the data type */
+	z = malloc (sizeof (adder_complex_vector));
+	if (z == 0x00) {
+		fprintf (stderr, "Failed to create complex vector.\n");
+		return NULL;
+	}
+	
+	/* Allocate the array that holds the values */
+	z->vect = malloc (numElements * sizeof (adder_complex_rect));
+	if (z->vect == 0x00) {
+		fprintf (stderr, "Failed to create complex vector.\n");
+		free (z);
+		return NULL;
+	}
+	
+	/* Fill the vector with the specified values */
+	for (i = 0; i < numElements; i++) {
+		z->vect[i].real = realValues[i];
+		z->vect[i].imag = imagValues[i];
+	}
+	
+	/* Set the orientation of the vector or return an error if the orientation is invalid */
+	if (orient == ROW_VECTOR) {
+		z->orientation = ROW_VECTOR;
+	}
+	else if (orient == COLUMN_VECTOR) {
+		z->orientation = COLUMN_VECTOR;
+	}
+	else {
+		fprintf (stderr, "Invalid orientation.\n");
+		free (z->vect);
+		free (z);
+		return NULL;
+	}
+	
+	/* Set the size of the vector */
+	z->size = numElements;
+	
+	return z;
+}
+
+/* Create a complex vector without setting any values */
+adder_complex_vector *
+complexVectorInit2 (int orient, int numElements)
+{
+	adder_complex_vector *z;
+	
+    /* Allocate the data type */
+	z = malloc (sizeof (adder_complex_vector));
+	if (z == 0x00) {
+		fprintf (stderr, "Failed to create complex vector.\n");
+		return NULL;
+	}
+	
+    /* Allocate the array that holds the values */
+	z->vect = malloc (numElements * sizeof (adder_complex_rect));
+	if (z->vect == 0x00) {
+		fprintf (stderr, "Failed to create complex vector.\n");
+		free (z);
+		return NULL;
+	}
+	
+	/* Set the orientation of the vector or return an error if the orientation is invalid */
+	if (orient == ROW_VECTOR) {
+		z->orientation = ROW_VECTOR;
+	}
+	else if (orient == COLUMN_VECTOR) {
+		z->orientation = COLUMN_VECTOR;
+	}
+	else {
+		fprintf (stderr, "Invalid orientation.\n");
+		free (z->vect);
+		free (z);
+	}
+	
+	/* Set the size of the vector */
+	z->size = numElements;
+	
+	return z;
+}
+
+/* Delete a complex-valued vector */
+void
+deleteComplexVector (adder_complex_vector *z)
+{
+	free (z->vect);
+	free (z);
+}
+
+/* Print a complex-valued vector */
+void
+printComplexVector (adder_complex_vector *z)
+{
+	int i;
+	
+    /* If the vector is a row vector */
+	if (z->orientation == ROW_VECTOR) {
+		for (i = 0; i < z->size; i++) {
+			printf ("%.8lf%+.8lfj ", z->vect[i].real, z->vect[i].imag);
+		}
+		
+		printf ("\n\n");
+	}
+	
+	/* Otherwise the vector is a column vector */
+	else {
+		for (i = 0; i < z->size; i++) {
+			printf ("%.8lf%+.8lfj\n", z->vect[i].real, z->vect[i].imag);
+		}
+		
+		printf ("\n");
+	}
+}
+		
+
 /* Vector setting functions */
 /* Set an existing vector to be a zero vector */
 void
@@ -187,19 +309,18 @@ randVector (adder_vector *v)
  * Other vector functions *
  **************************/
 
-/* Transpose a vector */
-adder_vector *
+/* Transpose a real-valued vector */
+void
 vectorTranspose (adder_vector *v)
 {
-	adder_vector *T;
+	v->orientation *= -1;
+}
 
-	T = vectorInit (-1 * v->orientation, v->size, v->vect);
-	if (T == 0x00) {
-		fprintf (stderr, "Cannot create transpose vector.\n");
-		return 0x00;
-	}
-
-	return T;
+/* Transpose a complex-valued vector */
+void
+complexVectorTranspose (adder_complex_vector *z)
+{
+    z->orientation *= -1;
 }
 
 /********************
