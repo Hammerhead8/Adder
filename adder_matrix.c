@@ -329,11 +329,11 @@ complexVectorTranspose (adder_complex_vector *z)
 
 /* Create a matrix and set its values */
 adder_matrix *
-matrixInit (int orient, int numRows, int numColumns, double *values)
+matrixInit (int numRows, int numColumns, double *values)
 {
-	adder_matrix *m;
-	int i, j;
-
+    adder_matrix *m;
+    int i, j;
+    
 	/* Allocate memory for the matrix */
 	m = malloc (sizeof (adder_matrix));
 	if (m == NULL) {
@@ -349,46 +349,20 @@ matrixInit (int orient, int numRows, int numColumns, double *values)
 
 	m->rows = numRows;
 	m->columns = numColumns;
-
-	/* Check if the matrix is to be row or column major */
-	if (orient == ROW_MAJOR) {
-		m->orientation = ROW_MAJOR;
-
-		/* Enter the values */
-		for (i = 0; i < numRows; i++) {
-			for (j = 0; j < numColumns; j++) {
-				m->mat[i * numColumns + j] = values[i * numColumns + j];
-			}
-		}
-	}
-	else if (orient == COLUMN_MAJOR) {
-		m->orientation = COLUMN_MAJOR;
-
-		/* Enter the values */
-		for (i = 0; i < numRows; i++) {
-			for (j = 0; j < numColumns; j++) {
-				m->mat[i * numColumns + j] = values[j * numRows + i];
-			}
-		}
-	}
-	else {
-		fprintf (stderr, "Invalid orientation. Assuming row major.\n");
-		m->orientation = ROW_MAJOR;
-
-		/* Enter the values */
-		for (i = 0; i < numRows; i++) {
-			for (j = 0; j < numColumns; j++) {
-				m->mat[i * numColumns + j] = values[i * numColumns + j];
-			}
-		}
-	}
-
-	return m;
+    
+    /* Fill the matrix with the values */
+    for (i = 0; i < m->rows; i++) {
+        for (j = 0; j < m->columns; j++) {
+            m->mat[i * numRows + j] = values[i * numRows + j];
+        }
+    }
+    
+    return m;
 }
 
-/* Create a matrix without settings its values */
+/* Create a matrix without setting its values */
 adder_matrix *
-matrixInit2 (int orient, int numRows, int numColumns)
+matrixInit2 (int numRows, int numColumns)
 {
 	adder_matrix *m;
 	int i, j;
@@ -407,18 +381,6 @@ matrixInit2 (int orient, int numRows, int numColumns)
 
 	m->rows = numRows;
 	m->columns = numColumns;
-
-	/* Set the matrix to be either row or column major */
-	if (orient == ROW_MAJOR) {
-		m->orientation = ROW_MAJOR;
-	}
-	else if (orient == COLUMN_MAJOR) {
-		m->orientation = COLUMN_MAJOR;
-	}
-	else {
-		fprintf (stderr, "Invalid orientation. Assuming row major.\n");
-		m->orientation = ROW_MAJOR;
-	}
 
 	return m;
 }
@@ -454,7 +416,7 @@ printMatrix (adder_matrix *m)
 
 /* Create a complex-valued matrix */
 adder_complex_matrix *
-complexMatrixInit (int orient, int numRows, int numColumns, double *realValues, double *imagValues)
+complexMatrixInit (int numRows, int numColumns, double *realValues, double *imagValues)
 {
     adder_complex_matrix *Z;
     int i, j;
@@ -475,35 +437,13 @@ complexMatrixInit (int orient, int numRows, int numColumns, double *realValues, 
     }
     
     /* Fill the matrix with the values */
-    /* If the matrix is row major then the data is filled along the rows */
-    if (orient = ROW_MAJOR) {
-        for (i = 0; i < numRows; i++) {
-            for (j = 0; j < numColumns; j++) {
-                Z->mat[i * numColumns + j].real = realValues[i * numColumns + j];
-                Z->mat[i * numColumns + j].imag = imagValues[i * numColumns + j];
-            }
+    for (i = 0; i < numRows; i++) {
+        for (j = 0; j < numColumns; j++) {
+            Z->mat[i * numColumns + j].real = realValues[i * numColumns + j];
+            Z->mat[i * numColumns + j].imag = imagValues[i * numColumns + j];
         }
     }
     
-    /* If the matrix is column major then the data is filled along the columns */
-    else if (orient == COLUMN_MAJOR) {
-        for (i = 0; i < numRows; i++) {
-            for (j = 0; j < numColumns; j++) {
-                Z->mat[i * numColumns + j].real = realValues[j * numRows + i];
-                Z->mat[i * numColumns + j].imag = imagValues[j * numRows + i];
-            }
-        }
-    }
-    
-    /* If the orientation is invalid then return a null pointer */
-    else {
-        fprintf (stderr, "Invalid orientation.\n");
-        free (Z->mat);
-        free (Z);
-        return NULL;
-    }
-    
-    Z->orientation = orient;
     Z->rows = numRows;
     Z->columns = numColumns;
     
@@ -512,7 +452,7 @@ complexMatrixInit (int orient, int numRows, int numColumns, double *realValues, 
 
 /* Create a complex-valued matrix without filling the values */
 adder_complex_matrix *
-complexMatrixInit2 (int orient, int numRows, int numColumns)
+complexMatrixInit2 (int numRows, int numColumns)
 {
     adder_complex_matrix *Z;
     
@@ -527,24 +467,6 @@ complexMatrixInit2 (int orient, int numRows, int numColumns)
     Z->mat = malloc (numRows * numColumns * sizeof (adder_complex_rect));
     if (Z->mat == 0x00) {
         fprintf (stderr, "Failed to create complex matrix.\n");
-        free (Z);
-        return NULL;
-    }
-    
-    /* If the matrix is row major */
-    if (orient == ROW_MAJOR) {
-        Z->orientation = ROW_MAJOR;
-    }
-    
-    /* If the matrix is column major */
-    else if (orient == COLUMN_MAJOR) {
-        Z->orientation = COLUMN_MAJOR;
-    }
-    
-    /* If the orientation is invalid then return a null pointer */
-    else {
-        fprintf (stderr, "Invalid orientation.\n");
-        free (Z->mat);
         free (Z);
         return NULL;
     }
@@ -601,19 +523,11 @@ mvMultiply (adder_matrix *M, adder_vector *v)
 	}
 
 	/* If the dimensions are valid then we can perform the multiplication */
-
-	/* Check if the matrix is row major or column major */
-	if (M->orientation == ROW_MAJOR) {
-		cblas_dgemv (CblasRowMajor, CblasNoTrans, M->rows, M->columns, 1.0, M->mat, M->columns, v->vect, 1, 0, res->vect, 1);
-		return res;
-	}
-
-	/* Otherwise the matrix must be column major */
-	else {
-		cblas_dgemv (CblasColMajor, CblasNoTrans, M->rows, M->columns, 1.0, M->mat, M->rows, v->vect, 1, 0, res->vect, 1);
-		return res;
-	}
+    cblas_dgemv (CblasRowMajor, CblasNoTrans, M->rows, M->columns, 1.0, M->mat, M->columns, v->vect, 1, 0.0, res->vect, 1);
+    
+    return res;
 }
+
 
 /* Multiply two matrices */
 adder_matrix *
@@ -636,33 +550,75 @@ mmMultiply (adder_matrix *A, adder_matrix *B)
 
 	/* We can now create the result matrix and multiply */
 
-	/* Check if the matrix is row major */
-	if (A->orientation == ROW_MAJOR) {
-		/* Create the result matrix */
-		res = matrixInit2 (ROW_MAJOR, A->rows, B->columns);
-		if (res == NULL) {
-			fprintf (stderr, "Failed to create result matrix.\n");
-			return NULL;
-		}
+    /* Create the result matrix */
+    res = matrixInit2 (ROW_MAJOR, A->rows, B->columns);
+    if (res == NULL) {
+        fprintf (stderr, "Failed to create result matrix.\n");
+        return NULL;
+    }
 
-		/* Now we can perform the multiplication */
-		cblas_dgemm (CblasRowMajor, CblasNoTrans, CblasNoTrans, A->rows, B->columns, A->columns, 1.0, A->mat, A->columns, B->mat, B->columns, 0.0, res->mat, res->columns);
-		return res;
-	}
+    /* Now we can perform the multiplication */
+    cblas_dgemm (CblasRowMajor, CblasNoTrans, CblasNoTrans, A->rows, B->columns, A->columns, 1.0, A->mat, A->columns, B->mat, B->columns, 0.0, res->mat, res->columns);
+    return res;
+}
 
-	/* Otherwise the matrix must be column major */
-	else {
-		/* Create the result matrix */
-		res = matrixInit2 (COLUMN_MAJOR, A->rows, B->columns);
-		if (res == NULL) {
-			fprintf (stderr, "Failed to create result matrix.\n");
-			return NULL;
-		}
+/* TODO:  Result does not match that given by Octave */
+/* Multiply a complex-valued vector and matrix */
+adder_complex_vector *
+mvMultiplyComplex (adder_complex_matrix *Z, adder_complex_vector *v)
+{
+    int err;
+    double *alpha;
+    double *beta;
+    int i;
+    adder_complex_vector *res;
 
-		/* Perform the multiplication */
-		cblas_dgemm (CblasColMajor, CblasNoTrans, CblasNoTrans, A->rows, B->columns, A->rows, 1.0, A->mat, A->columns, B->mat, B->rows, 0.0, res->mat, res->columns);
-		return res;
-	}
+    
+    /* Check that v is a column vector */
+    if (v->orientation == COLUMN_VECTOR) {
+        if (Z->rows != v->size) {
+            fprintf (stderr, "Invalid dimensions for multiplication.\n");
+            return NULL;
+        }
+        
+        else {
+            res = complexVectorInit2 (COLUMN_VECTOR, v->size);
+            if (res == 0x00) {
+                return NULL;
+            }
+            
+            alpha = malloc (v->size * sizeof (double));
+            if (alpha == 0x00) {
+                fprintf (stderr, "Failed to multiply vector and matrix.\n");
+                return NULL;
+            }
+            
+            beta = malloc (v->size * sizeof (double));
+            if (beta == 0x00) {
+                fprintf (stderr, "Failed to multiply vector and matrix.\n");
+                free (alpha);
+                return NULL;
+            }
+            
+            for (i = 0; i < v->size; i++) {
+                alpha[i] = 1.0;
+                beta[i] = 0.0;
+            }
+        }
+    }
+    
+    else {
+        fprintf (stderr, "Vector must be a column vector for multiplication.\n");
+        return NULL;
+    }
+    
+    /* Perform the multiplication */
+    cblas_zgemv (CblasRowMajor, CblasNoTrans, Z->rows, Z->columns, alpha, Z->mat, Z->columns, v->vect, 1, beta, res->vect, 1);
+    
+    free (alpha);
+    free (beta);
+    
+    return res;
 }
 
 /* Set the matrix to a zero matrix */
