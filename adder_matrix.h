@@ -53,6 +53,15 @@ typedef struct
 	int orientation;
 } adder_matrix;
 
+/* Complex matrix type definition */
+typedef struct
+{
+    adder_complex_rect *mat;
+    int rows;
+    int columns;
+    int orientation;
+} adder_complex_matrix;
+
 /* Vector IO functions */
 adder_vector * vectorInit (int orient, int numElements, double *values);
 adder_vector * vectorInit2 (int orient, int numElements);
@@ -79,6 +88,12 @@ adder_matrix * matrixInit (int orient, int numRows, int numColumns, double *valu
 adder_matrix *matrixInit2 (int orient, int numRows, int numcolumns);
 void deleteMatrix (adder_matrix *m);
 void printMatrix (adder_matrix *m);
+
+/* Complex matrix IO functions */
+adder_complex_matrix * complexMatrixInit (int orient, int numRows, int numColumns, double *realValues, double *imagValues);
+adder_complex_matrix * complexMatrixInit2 (int orient, int numRows, int numColumns);
+void deleteComplexMatrix (adder_complex_matrix *Z);
+void printComplexMatrix (adder_complex_matrix *Z);
 
 /* Matrix arithmetic functions */
 adder_vector * mvMultiply (adder_matrix *M, adder_vector *v);

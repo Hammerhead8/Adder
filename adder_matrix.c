@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <cblas.h>
-#include "adder_matrix.h"
+#include "matrix.h"
 
 /* TODO:  Result matrix should match orientation of input matrix/matrices */
 
@@ -446,6 +446,135 @@ printMatrix (adder_matrix *m)
 	}
 
 	printf ("\n");
+}
+
+/*******************************
+ * Complex matrix IO functions *
+ * *****************************/
+
+/* Create a complex-valued matrix */
+adder_complex_matrix *
+complexMatrixInit (int orient, int numRows, int numColumns, double *realValues, double *imagValues)
+{
+    adder_complex_matrix *Z;
+    int i, j;
+    
+    /* Allocate the data type */
+    Z = malloc (sizeof (adder_complex_matrix));
+    if (Z == 0x00) {
+        fprintf (stderr, "Failed to create complex matrix.\n");
+        return NULL;
+    }
+    
+    /* Create the actual matrix */
+    Z->mat = malloc (numRows * numColumns * sizeof (adder_complex_rect));
+    if (Z->mat == 0x00) {
+        fprintf (stderr, "Failed to create complex matrix.\n");
+        free (Z);
+        return NULL;
+    }
+    
+    /* Fill the matrix with the values */
+    /* If the matrix is row major then the data is filled along the rows */
+    if (orient = ROW_MAJOR) {
+        for (i = 0; i < numRows; i++) {
+            for (j = 0; j < numColumns; j++) {
+                Z->mat[i * numColumns + j].real = realValues[i * numColumns + j];
+                Z->mat[i * numColumns + j].imag = imagValues[i * numColumns + j];
+            }
+        }
+    }
+    
+    /* If the matrix is column major then the data is filled along the columns */
+    else if (orient == COLUMN_MAJOR) {
+        for (i = 0; i < numRows; i++) {
+            for (j = 0; j < numColumns; j++) {
+                Z->mat[i * numColumns + j].real = realValues[j * numRows + i];
+                Z->mat[i * numColumns + j].imag = imagValues[j * numRows + i];
+            }
+        }
+    }
+    
+    /* If the orientation is invalid then return a null pointer */
+    else {
+        fprintf (stderr, "Invalid orientation.\n");
+        free (Z->mat);
+        free (Z);
+        return NULL;
+    }
+    
+    Z->orientation = orient;
+    Z->rows = numRows;
+    Z->columns = numColumns;
+    
+    return Z;
+}
+
+/* Create a complex-valued matrix without filling the values */
+adder_complex_matrix *
+complexMatrixInit2 (int orient, int numRows, int numColumns)
+{
+    adder_complex_matrix *Z;
+    
+    /* Allocate the data type */
+    Z = malloc (sizeof (adder_complex_matrix));
+    if (Z == 0x00) {
+        fprintf (stderr, "Failed to create complex matrix.\n");
+        return NULL;
+    }
+    
+    /* Create the actual matrix */
+    Z->mat = malloc (numRows * numColumns * sizeof (adder_complex_rect));
+    if (Z->mat == 0x00) {
+        fprintf (stderr, "Failed to create complex matrix.\n");
+        free (Z);
+        return NULL;
+    }
+    
+    /* If the matrix is row major */
+    if (orient == ROW_MAJOR) {
+        Z->orientation = ROW_MAJOR;
+    }
+    
+    /* If the matrix is column major */
+    else if (orient == COLUMN_MAJOR) {
+        Z->orientation = COLUMN_MAJOR;
+    }
+    
+    /* If the orientation is invalid then return a null pointer */
+    else {
+        fprintf (stderr, "Invalid orientation.\n");
+        free (Z->mat);
+        free (Z);
+        return NULL;
+    }
+    
+    Z->rows = numRows;
+    Z->columns = numColumns;
+}
+
+/* Delete a complex-valued matrix */
+void
+deleteComplexMatrix (adder_complex_matrix *Z)
+{
+    free (Z->mat);
+    free (Z);
+}
+
+/* Print a complex-valued matrix */
+void
+printComplexMatrix (adder_complex_matrix *Z)
+{
+    int i, j;
+    
+    /* If the matrix is row major then the data is along the rows */
+    for (i = 0; i < Z->rows; i++) {
+        for (j = 0; j < Z->columns; j++) {
+            printf ("%.8lf%+.8lfj ", Z->mat[i * Z->columns + j].real, Z->mat[i * Z->columns + j].imag);
+        }
+        
+        printf ("\n");
+    }
 }
 
 /* Multiply a matrix and with a vector */
