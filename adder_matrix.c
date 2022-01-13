@@ -351,9 +351,9 @@ matrixInit (int numRows, int numColumns, double *values)
 	m->columns = numColumns;
     
     /* Fill the matrix with the values */
-    for (i = 0; i < m->rows; i++) {
-        for (j = 0; j < m->columns; j++) {
-            m->mat[i * numRows + j] = values[i * numRows + j];
+    for (i = 0; i < numRows; i++) {
+        for (j = 0; j < numColumns; j++) {
+            m->mat[i * numColumns + j] = values[i * numColumns + j];
         }
     }
     
@@ -542,16 +542,10 @@ mmMultiply (adder_matrix *A, adder_matrix *B)
 		return NULL;
 	}
 
-	/* Also check that the orientations of the matrices match */
-	else if (A->orientation != B->orientation) {
-		fprintf (stderr, "ERROR:  Orientations of A and B don't match.\n");
-		return NULL;
-	}
-
 	/* We can now create the result matrix and multiply */
 
     /* Create the result matrix */
-    res = matrixInit2 (ROW_MAJOR, A->rows, B->columns);
+    res = matrixInit2 (A->rows, B->columns);
     if (res == NULL) {
         fprintf (stderr, "Failed to create result matrix.\n");
         return NULL;
@@ -697,7 +691,7 @@ matrixTranspose (adder_matrix *m)
 	adder_matrix *T;
 	long int i, j;
 
-	T = matrixInit2 (ROW_MAJOR, m->columns, m->rows);
+	T = matrixInit2 (m->columns, m->rows);
 	if (T == 0x00) {
 		fprintf (stderr, "Failed to create transpose matrix.\n");
 		return 0x00;
