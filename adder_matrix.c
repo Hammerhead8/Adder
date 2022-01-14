@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <cblas.h>
-#include "matrix.h"
+#include "adder_matrix.h"
 
 /* TODO:  Result matrix should match orientation of input matrix/matrices */
 
@@ -556,47 +556,26 @@ mmMultiply (adder_matrix *A, adder_matrix *B)
     return res;
 }
 
-/* TODO:  Result does not match that given by Octave */
 /* Multiply a complex-valued vector and matrix */
 adder_complex_vector *
 mvMultiplyComplex (adder_complex_matrix *Z, adder_complex_vector *v)
 {
-    int err;
-    double *alpha;
-    double *beta;
-    int i;
+    const double alpha = 1.0;
+    const double beta = 0.0;
     adder_complex_vector *res;
 
     
     /* Check that v is a column vector */
     if (v->orientation == COLUMN_VECTOR) {
-        if (Z->rows != v->size) {
+        if (Z->columns != v->size) {
             fprintf (stderr, "Invalid dimensions for multiplication.\n");
             return NULL;
         }
         
         else {
-            res = complexVectorInit2 (COLUMN_VECTOR, v->size);
+            res = complexVectorInit2 (COLUMN_VECTOR, Z->rows);
             if (res == 0x00) {
                 return NULL;
-            }
-            
-            alpha = malloc (v->size * sizeof (double));
-            if (alpha == 0x00) {
-                fprintf (stderr, "Failed to multiply vector and matrix.\n");
-                return NULL;
-            }
-            
-            beta = malloc (v->size * sizeof (double));
-            if (beta == 0x00) {
-                fprintf (stderr, "Failed to multiply vector and matrix.\n");
-                free (alpha);
-                return NULL;
-            }
-            
-            for (i = 0; i < v->size; i++) {
-                alpha[i] = 1.0;
-                beta[i] = 0.0;
             }
         }
     }
@@ -607,10 +586,7 @@ mvMultiplyComplex (adder_complex_matrix *Z, adder_complex_vector *v)
     }
     
     /* Perform the multiplication */
-    cblas_zgemv (CblasRowMajor, CblasNoTrans, Z->rows, Z->columns, alpha, Z->mat, Z->columns, v->vect, 1, beta, res->vect, 1);
-    
-    free (alpha);
-    free (beta);
+    cblas_zgemv (CblasRowMajor, CblasNoTrans, Z->rows, Z->columns, &alpha, Z->mat, Z->columns, v->vect, 1, &beta, res->vect, 1);
     
     return res;
 }
