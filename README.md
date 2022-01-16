@@ -3,8 +3,8 @@ Adder is a numerical library for C/C++ similar to the GNU Scientific Library. Th
 that are most useful to me, which includes complex numbers, linear algebra, and random number generation.
 This project came out of needing some of the features in GSL, but wanting an easier to use programming interface and not needing all of its features.
 
-Note that these functions have only been tested under Linux, so some functions might use features that are specific to Linux (i.e. /dev/urandom
-to seed some random number generators).
+Note that these functions are written and tested under Linux, so some functions might use features that are specific to Linux (i.e. /dev/urandom
+to seed some random number generators). There is currently no plan to support Windows, MacOS, or other operating systems.
 
 # Features
 Adder is still under development and is incomplete, but the currently supported features are:
@@ -71,14 +71,19 @@ Adder is still under development and is incomplete, but the currently supported 
 
 Currently the linear algebra functions only support real-valued matrices and
 use only the general matrix routines. It is planned to eventually support
-both complex-valued matrices as well as symmetric, positive definite, and other
-types of matrices suppoted by LAPACK.
+both complex-valued vectors and matrices.
 
 # Dependencies
 The following libraries are required:
 * BLAS (tested with OpenBLAS)
 * LAPACKE:  https://performance.netlib.org/lapack/lapacke.html
 
-When using any functions that call BLAS or LAPACKE routines, the program should be compiled using the `-llapacke` and `-lopenblas` flags.
-
 More will be added as features are developed.
+
+# Installation
+To build from source, first download the latest available release. Building requires GNU Make to be installed. Once the source files are unpacked in the desired directory, the following commands can be used to build Adder:
+1. `./configure`
+2. `make`
+3. `make install`
+
+Once installed, Adder can be linked during compilation using `-ladder`. If an `Error loading shared libraries` occurs after building then run `ldconfig`.
