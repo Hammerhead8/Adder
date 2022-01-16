@@ -591,6 +591,34 @@ mvMultiplyComplex (adder_complex_matrix *Z, adder_complex_vector *v)
     return res;
 }
 
+/* Multiply two complex-valued matrices */
+adder_complex_matrix *
+mmMultiplyComplex (adder_complex_matrix *Y, adder_complex_matrix *Z)
+{
+    const double alpha = 1.0;
+    const double beta = 0.0;
+    adder_complex_matrix *res;
+    
+    /* Check that the dimensions are valid for multiplication */
+    if (Y->columns != Z->rows) {
+        fprintf (stderr, "Invalid dimensions for multiplication. Matrix 1 has dimensions %d, %d and matrix 2 has dimensions %d, %d.\n", Y->rows, Y->columns, Z->rows, Z->columns);
+        return NULL;
+    }
+    
+    else {
+        res = complexMatrixInit2 (Y->rows, Z->columns);
+        if (res == 0x00) {
+            fprintf (stderr, "Failed to create result matrix.\n");
+            return NULL;
+        }
+    }
+    
+    /* Perform the multiplication */
+    cblas_zgemm (CblasRowMajor, CblasNoTrans, CblasNoTrans, Y->rows, Z->columns, Y->columns, &alpha, Y->mat, Y->columns, Z->mat, Z->columns, &beta, res->mat, res->columns);
+    
+    return res;
+}
+
 /* Set the matrix to a zero matrix */
 void
 matrixZeros (adder_matrix *m)
