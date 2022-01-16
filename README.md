@@ -86,4 +86,4 @@ To build from source, first download the latest available release. Building requ
 2. `make`
 3. `make install`
 
-Once installed, Adder can be linked during compilation using `-ladder`.
+Once installed, Adder can be linked during compilation using `-ladder`. If an `Error loading shared libraries` occurs after building then run `ldconfig`.
