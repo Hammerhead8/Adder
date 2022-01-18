@@ -7,7 +7,6 @@
 #include <cblas.h>
 #include <lapacke.h>
 #include "adder_math.h"
-#include "adder_matrix.h"
 #include "adder_linalg.h"
 
 #define max(x, y) x >= y ? x : y
@@ -35,7 +34,7 @@ inverse (adder_matrix *M)
 	res = matrixInit (M->rows, M->columns, M->mat);
     
     /* Calculate the LU factorization of the matrix */
-    err = LAPACKE_dgetrf (LAPACK_ROW_MAJOR, n, m, res->mat, n, ipvt);
+    err = LAPACKE_dgetrf (LAPACK_ROW_MAJOR, m, n, res->mat, n, ipvt);
     if (err < 0) {
         fprintf (stderr, "The value of argument %d is illegal\n", -1 * err);
         return NULL;
@@ -60,8 +59,6 @@ inverse (adder_matrix *M)
         fprintf (stderr, "Matrix is singular.\n");
         return NULL;
     }
-
-	return 0;
 }
 
 /* Calculate the Moore-Penrose pseudoinverse of a matrix
@@ -323,6 +320,89 @@ pseudoinverse (adder_matrix *m)
 	return res;
 }
 
+/* Calculate the inverse of a complex-valued matrix */
+adder_complex_matrix *
+complexInverse (adder_complex_matrix *M)
+{
+    double complex *res;
+    adder_complex_matrix *finalRes;
+    int ipvt[M->rows];
+    int m, n;
+    int err;
+    int i, j;
+    
+    /* If the matrix isn't square then we can't calculate the inverse */
+    if (M->rows != M->columns) {
+        fprintf (stderr, "Dimension error:  matrix not square.\n");
+        return NULL;
+    }
+
+    /* Make res equal to M */
+    res = malloc (M->rows * M->columns * sizeof (double complex));
+    if (res == 0x00) {
+        return NULL;
+    }
+    
+    /* Extract the real and imaginary values from M */
+    for (i = 0; i < M->rows; i++) {
+        for (j = 0; j < M->columns; j++) {
+            res[i * M->columns + j] = M->mat[i * M->columns + j].real + M->mat[i * M->columns + j].imag * I;
+        }
+    }
+    
+    m = M->rows;
+    n = M->columns;
+    
+    /* Calculate the LU factorization */
+    err = LAPACKE_zgetrf (LAPACK_ROW_MAJOR, m, n, res, n, ipvt);
+    if (err < 0) {
+        fprintf (stderr, "The value of argument %d is illegal\n", -1 * err);
+        free (res);
+        return NULL;
+    }
+    
+    else if (err > 0) {
+        fprintf (stderr, "Factorization is singular.\n");
+        free (res);
+        return NULL;
+    }
+    
+    /* Invert the matrix */
+    err = LAPACKE_zgetri (LAPACK_ROW_MAJOR, n, res, n, ipvt);
+    
+    if (err < 0) {
+        fprintf (stderr, "The value of argument %d is illegal.\n", -1 * err);
+        free (res);
+        return NULL;
+    }
+    
+    else if (err > 0) {
+        fprintf (stderr, "Matrix is singular.\n");
+        free (res);
+        return NULL;
+    }
+    
+    /* The last step is to convert res to adder_complex_rect for the final result */
+    finalRes = complexMatrixInit2 (M->rows, M->columns);
+    if (finalRes == 0x00) {
+        free (res);
+        return NULL;
+    }
+    
+    /* Copy the values from res into finalRes */
+    for (i = 0; i < m; i++) {
+        for (j = 0; j < n; j++) {
+            finalRes->mat[i * n + j].real = creal (res[i * n + j]);
+            finalRes->mat[i * n + j].imag = cimag (res[i * n + j]);
+        }
+    }
+    
+    free (res);
+    
+    return finalRes;
+}
+        
+
 /********************
  * Equation solving *
  ********************/
@@ -540,6 +620,84 @@ eigenValues (adder_matrix *M)
         free (wi);
         return NULL;
     }
+}
+
+/* Calculate the eigenvalues of a complex-valued matrix */
+adder_complex_vector *
+complexEigenValues (adder_complex_matrix *M)
+{
+	adder_complex_vector *res;
+    double complex *Z;
+	double complex *wi;
+    double complex *vl;
+    double complex *vr;
+	int i, j;
+	int n;
+	int err;
+	
+	/* Check that the matrix is square */
+	if (M->rows != M->columns) {
+		fprintf (stderr, "Eigenvalue error:  Matrix is not square.\n");
+		return NULL;
+	}
+	
+	/* Since the matrix is square, n = rows == columns */
+	n = M->rows;
+	
+	res = complexVectorInit2 (COLUMN_VECTOR, n);
+	if (res == 0x00) {
+		fprintf (stderr, "Failed to create result vector.\n");
+		return NULL;
+	}
+    
+    wi = malloc (n * sizeof (double complex));
+    if (wi == 0x00) {
+        deleteComplexVector (res);
+        return NULL;
+    }
+    
+    Z = malloc (n * n * sizeof (double complex));
+    if (Z == 0x00) {
+        free (wi);
+        deleteComplexVector (res);
+        return NULL;
+    }
+    
+    /* Copy the values from M into Z */
+    for (i = 0; i < n; i++) {
+        for (j = 0; j < n; j++) {
+            Z[i * n + j] = M->mat[i * n + j].real + M->mat[i * n + j].imag * I;
+        }
+    }
+    
+    /* Calculate the eigenvalues */
+    err = LAPACKE_zgeev (LAPACK_ROW_MAJOR, 'N', 'N', n, Z, n, wi, vl, n, vr, n);
+    
+    if (err < 0) {
+        fprintf (stderr, "Argument %d is invalid.\n", -1 * err);
+        free (wi);
+        free (Z);
+        deleteComplexVector (res);
+        return NULL;
+    }
+    
+    else if (err > 0) {
+        fprintf (stderr, "Failed to calculate eigenvalues.\n");
+        free (wi);
+        free (Z);
+        deleteComplexVector (res);
+        return NULL;
+    }
+    
+    /* The last step is to copy the values from res into finalRes */
+    for (i = 0; i < n; i++) {
+        res->vect[i].real = creal (wi[i]);
+        res->vect[i].imag = cimag (wi[i]);
+    }
+    
+    free (wi);
+    free (Z);
+    return res;
 }
 
 /* Calculate the singular values of a matrix */
