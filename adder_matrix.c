@@ -72,6 +72,20 @@ vectorInit2 (int orient, int numElements)
 
 	v->size = numElements;
 
+	if (orient == ROW_VECTOR) {
+		v->orientation = ROW_VECTOR;
+	}
+
+	else if (orient == COLUMN_VECTOR) {
+		v->orientation = COLUMN_VECTOR;
+	}
+
+	else {
+		fprintf (stderr, "Invalid vector orientation.\n");
+		deleteVector (v);
+		return NULL;
+	}
+
 	return v;
 }
 
