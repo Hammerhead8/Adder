@@ -1,8 +1,10 @@
 /* differentiate.c
  * Function definitions for the numerical differentiation routines.
  *
+ * The formulas for the first-order derivatives comes from https://dlmf.nist.gov/3.4#i
+ *
  * TODO:  Implement directional derivatives for multi-dimensional functions */
-#include "adder_differentiate.h"
+#include "differentiate.h"
 
 /* Differentiate a function of one variable using the symmetric
  * difference quotient.
@@ -35,12 +37,24 @@ derivCenter (adder_function *f, double x, double h)
 	double a, b, c, d, e;
 	double dx;
 
-	a = f->function (x - 2 * h);
-	b = -8 * f->function (x - h);
-	c = 8 * f->function (x + h);
-	d = -1 * f->function (x + 2 * h);
+	/* Calculate the values of the Legrange interpolation coefficients */
+	a = (1 - x - 3 * x * x + 2 * x * x * x) / 12.0;
+	a *= f->function (x - 2 * h);
 
-	dx = (a + b + c + d) / (12 * h);
+	b = -1 * (4 - 8 * x - 3 * x * x + 4 * x * x * x) / 6.0;
+	b *= f->function (x - h);
+
+	c = -1 * (5 * x - 2 * x * x * x) / 2.0;
+	c *= f->function (x);
+
+	d = (4 + 8 * x - 3 * x * x - 4 * x * x * x) / 6.0;
+	d *= f->function (x + h);
+
+	e = -1 * (1 + x - 3 * x * x - 2 * x * x * x) / 12.0;
+	e *= f->function (x + 2 * h);
+
+	/* Calculate the derivative by adding the coefficients and dividing by h */
+	dx = (a + b + c + d + e) / h;
 
 	return dx;
 }
@@ -55,13 +69,24 @@ derivForward (adder_function *f, double x, double h)
 	double a, b, c, d, e;
 	double dx;
 
-	a = -25 * f->function (x);
-	b = 48 * f->function (x + h);
-	c = -36 * f->function (x + 2 * h);
-	d = 16 * f->function (x + 3 * h);
-	e = -3 * f->function (x + 4 * h);
+	/* Calculate the values of the Lagrangian interpolation coefficients */
+	a = (1 - x - 3 * x * x + 2 * x * x * x) / 12.0;
+	a *= f->function (x);
 
-	dx = (a + b + c + d + e) / (12 * h);
+	b = -1 * (4 - 8 * x - 3 * x * x + 4 * x * x * x) / 6.0;
+	b *= f->function (x + h);
+
+	c = -1 * (5 * x - 2 * x * x * x) / 2.0;
+	c *= f->function (x + 2 * h);
+
+	d = (4 + 8 * x - 3 * x * x - 4 * x * x * x) / 6.0;
+	d *= f->function (x + 3 * h);
+
+	e = -1 * (1 + x - 3 * x * x - 2 * x * x * x) / 12.0;
+	e *= f->function (x + 4 * h);
+
+	/* Calculate the derivative by adding the coefficients and dividing by h */
+	dx = (a + b + c + d + e) / h;
 
 	return dx;
 }
@@ -76,13 +101,24 @@ derivBackward (adder_function *f, double x, double h)
 	double a, b, c, d, e;
 	double dx;
 
-	a = -25 * f->function (x - 4 * h);
-	b = 48 * f->function (x - 3 * h);
-	c = -36 * f->function (x - 2 * h);
-	d = 16 * f->function (x - h);
-	e = -3 * f->function (x);
+	/* Calculate the values of the Lagrangian interpolation coefficients */
+	a = (1 - x - 3 * x * x + 2 * x * x * x) / 12.0;
+	a *= f->function (x - 4 * h);
 
-	dx = (a + b + c + d + e) / (12 * h);
+	b = -1 * (4 - 8 * x - 3 * x * x + 4 * x * x * x) / 6.0;
+	b *= f->function (x - 3 * h);
+
+	c = -1 * (5 * x - 2 * x * x * x) / 2.0;
+	c *= f->function (x - 2 * h);
+
+	d = (4 + 8 * x - 3 * x * x - 4 * x * x * x) / 6.0;
+	d *= f->function (x - h);
+
+	e = -1 * (1 + x - 3 * x * x - 2 * x * x * x) / 12.0;
+	e *= f->function (x);
+
+	/* Calculate the derivative by adding the coefficients and dividing by h */
+	dx = (a + b + c + d + e) / h;
 
 	return dx;
 }
