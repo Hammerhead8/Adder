@@ -83,7 +83,7 @@ vectorInit2 (int orient, int numElements)
 
 	else {
 		fprintf (stderr, "Invalid vector orientation.\n");
-		deletVector (v);
+		deleteVector (v);
 		return NULL;
 	}
 
