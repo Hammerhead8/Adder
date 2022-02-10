@@ -6,7 +6,7 @@
 #ifndef INTEGRATION_H
 #define INTEGRATION_H
 
-#include "../adder_math.h" /* For adder_function */
+#include "adder_math.h" /* For adder_function */
 
 enum
 IntegralErrors
