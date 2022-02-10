@@ -4,7 +4,7 @@
  * The formulas for the first-order derivatives comes from https://dlmf.nist.gov/3.4#i
  *
  * TODO:  Implement directional derivatives for multi-dimensional functions */
-#include "differentiate.h"
+#include "adder_differentiate.h"
 
 /* Differentiate a function of one variable using the symmetric
  * difference quotient.
