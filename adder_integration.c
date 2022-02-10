@@ -159,7 +159,7 @@ galeQuad (adder_function *f, double *res, double a, double b, int N)
 	int i, j;
 	int m;
 //	double res = 0;
-	const double M_PI = 3.14159265358979323846; /* Needed because M_PI isn't part of the standard math library */
+	const double PI = 3.14159265358979323846; /* Needed because M_PI isn't part of the standard math library */
 
 	/* Allocate the arrays of weights and abscissas */
 	xi = malloc (N * sizeof (double));
@@ -183,7 +183,7 @@ galeQuad (adder_function *f, double *res, double a, double b, int N)
 
 	/* Calculate the abscissas and weights */
 	for (i = 1; i <= m; i++) {
-		z = cos(M_PI * (i - 0.25) / ((double)N + 0.5)); //initial estimate
+		z = cos(PI * (i - 0.25) / ((double)N + 0.5)); //initial estimate
 		z1 = z + 1;
 
 		while (fabs (z - z1) > __DBL_EPSILON__) {
