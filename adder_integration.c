@@ -10,7 +10,7 @@
  * a is the lower bound of integration
  * b is the upper bound of integration */
 double
-guass3 (adder_function *f, double a, double b)
+gauss3 (adder_function *f, double a, double b)
 {
 	const double xi[3] = {-.7745966692, 0.0, .7745966692}; /* Abscissas */
 	const double wi[3] = {.5555554736, .8888888889, .5555554736}; /* Weights */
@@ -136,7 +136,7 @@ gauss20 (adder_function *f, double a, double b)
 }
 
 /* General Gauss-Legendre quadrature
- * Since the number of points to use is only known at run time, the
+  * Since the number of points to use is only known at run time, the
  * weights and abscissas are not calculated beforehand
  * f is the function to be integrated
  * a is the lower bound of integration
@@ -146,8 +146,10 @@ gauss20 (adder_function *f, double a, double b)
  * Routine is a reimplementation of that by Pazus at
  * https://github.com/Pazus/Legendre-Gauss-Quadrature */
 int
-galeQuad (adder_function *f, double a, double b, double *xi, double *wi, int N)
+galeQuad (adder_function *f, double *res, double a, double b, int N)
 {
+	double *xi;
+	double *wi;
 	double mul1, mul2, mul3;
 	double fValue;
 	double x;
@@ -156,7 +158,20 @@ galeQuad (adder_function *f, double a, double b, double *xi, double *wi, int N)
 	double h;
 	int i, j;
 	int m;
-	double res = 0;
+//	double res = 0;
+	const double M_PI = 3.14159265358979323846; /* Needed because M_PI isn't part of the standard math library */
+
+	/* Allocate the arrays of weights and abscissas */
+	xi = malloc (N * sizeof (double));
+	if (xi == 0x00) {
+		return INTEGRAL_ERROR;
+	}
+
+	wi = malloc (N * sizeof (double));
+	if (wi == 0x00) {
+		free (xi);
+		return INTEGRAL_ERROR;
+	}
 
 	/* Check if the number of points to be used is an even number */
 	if (N % 2 == 0) {
@@ -197,6 +212,9 @@ galeQuad (adder_function *f, double a, double b, double *xi, double *wi, int N)
 
 	/* Now we can apply the quadrature algorithm */
 
+	/* Set the starting value of the result to 0 */
+	*res = 0;
+
 	/* The first step is to transform the bounds from [a,b] to [-1,1] */
 	mul1 = (b - a) / 2;
 	mul2 = mul1;
@@ -206,13 +224,13 @@ galeQuad (adder_function *f, double a, double b, double *xi, double *wi, int N)
 	for (i = 0; i < N; i++) {
 		x = mul2 * xi[i] + mul3;
 		fValue = f->function (x);
-		res += wi[i] * fValue;
+		*res += wi[i] * fValue;
 	}
 
 	/* Multiply res by mul1 to get the final result */
-	res *= mul1;
+	*res *= mul1;
 
-	return res;
+	return INTEGRAL_SUCCESS;
 }
 
 
@@ -226,17 +244,18 @@ galeQuad (adder_function *f, double a, double b, double *xi, double *wi, int N)
  * b is the upper bound of integration
  * N is the number of points to use */
 double
-trapezoidIntegrate (adder_function *f, double a, double b, double *points, int N)
+trapezoidIntegrate (adder_function *f, double a, double b, int N)
 {
 	double dX;
 	double x;
+	double points[N];
 	double res = 0;
 	int i;
 
 	dX = (b - a) / (double)N;
 
 	/* Calculate the points that form the edges of the intervals */
-	for (i = 0; i <= N; i++) {
+	for (i = 0; i < N; i++) {
 		x = a + i * dX;
 		points[i] = f->function (x);
 	}
@@ -262,18 +281,23 @@ trapezoidIntegrate (adder_function *f, double a, double b, double *points, int N
  * N is the number of points to use.
  * NOTE:  n must be an even number */
 double
-simpsonIntegrate (adder_function *f, double a, double b, double *points, int N)
+simpsonIntegrate (adder_function *f, double a, double b, int N)
 {
 	double dx;
 	double x;
+	double points[N];
 	double res = 0;
 	int i;
+
+	/* Create the points array */
+//	points = malloc (N * sizeof (double));
+//	if (points
 
 	/* Calculate the constants */
 	dx = (b - a) / (double)N;
 
 	/* Calculate the function values for each point */
-	for (i = 0; i <= N; i++) {
+	for (i = 0; i < N; i++) {
 		x = a + i * dx;
 		points[i] = f->function (x);
 	}
@@ -283,7 +307,7 @@ simpsonIntegrate (adder_function *f, double a, double b, double *points, int N)
 	res += points[N - 1];
 
 	/* Iterate the rest of the algorithm */
-	for (i = 1; i <= N - 1; i++) {
+	for (i = 1; i < N - 1; i++) {
 		if (i % 2 == 0) {
 			res += 2 * points[i];
 		}
@@ -296,4 +320,57 @@ simpsonIntegrate (adder_function *f, double a, double b, double *points, int N)
 	res *= dx / 3;
 
 	return res;
+}
+
+/* Monte Carlo integration */
+double
+monteCarloIntegrate (adder_function *f, double a, double b, long unsigned int N)
+{
+	unsigned int seed;
+	double x, y;
+	double mul1, mul2;
+	double result;
+	int i;
+	int err;
+	FILE *fp;
+
+	fp = fopen ("/dev/urandom", "r");
+	if (fp == 0) {
+		fprintf (stderr, "ERROR:  Failed to open /dev/urandom\n");
+		return INTEGRAL_ERROR;
+	}
+
+	err = fread (&seed, sizeof (unsigned int), 1, fp);
+	if (err == 0) {
+		fprintf (stderr, "ERROR:  failed to read from /dev/urandom\n");
+		fclose (fp);
+		return INTEGRAL_ERROR;
+	}
+
+	fclose (fp);
+
+	/* Change the bounds of integration to be between 0 and 1 */
+	mul1 = (a - b) / (0 - 1);
+	mul2 = a - 0 * ((a - b) / (0 - 1));
+
+	/* Seed the random number generator */
+	srand (seed);
+
+	/* Set the result value to zero */
+	result = 0;
+
+	for (i = 0; i < N; i++) {
+		/* Generate a number between 0 and 1 */
+		x = (double)rand () / (double)RAND_MAX;
+		x = x * mul1 + mul2;
+
+		y = f->function (x);
+		y *= (b - a);
+
+		result += y;
+	}
+
+	result /= (double)N;
+
+	return result;
 }
