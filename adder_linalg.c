@@ -542,6 +542,95 @@ linearLeastSquares (adder_matrix *M, adder_vector *b)
 		deleteVector (res);
 		return 0x00;
 	}
+<<<<<<< HEAD
+}
+
+/* Solve a complex-valued system of linear equations */
+adder_complex_vector *
+complexLinearSolve (adder_complex_matrix *M, adder_complex_vector *b)
+{
+	adder_complex_vector *res; /* Result vector */
+	double complex *Z; /* Coefficient matrix */
+	double complex *y;
+	int ipvt[M->rows];
+	int m;
+	int err;
+	int i, j;
+
+	/* Check that the right-side vector is a column vector */
+	if (b->orientation == ROW_VECTOR) {
+		fprintf (stderr, "ERROR:  b vector must be a column vector.\n");
+		return NULL;
+	}
+
+	/* Check that M is a square matrix */
+	if (M->rows != M->columns) {
+		fprintf (stderr, "ERROR:  Matrix must be square but has dimensions %dx%d.\n", M->rows, M->columns);
+		return NULL;
+	}
+
+	/* Check that M has as many columns as b has rows */
+	if (M->columns != b->size) {
+		fprintf (stderr, "ERROR:  Matrix and b vector dimension match.\n");
+		return NULL;
+	}
+
+	/* Since we know the matrix and vector dimensions match, copy M into Z and b into y */
+	m = M->rows;
+
+	Z = malloc (m * m * sizeof (double complex));
+	if (Z == 0x00) {
+		return NULL;
+	}
+
+	y = malloc (m * sizeof (double complex));
+	if (y == 0x00) {
+		free (Z);
+		return NULL;
+	}
+
+	/* Copy the values from M and b to Z and y */
+	for (i = 0; i < m; i++) {
+		for (j = 0; j < m; j++) {
+			Z[i * m + j] = M->mat[i * m + j].real + M->mat[i * m + j].imag * I;
+		}
+
+		y[i] = b->vect[i].real + b->vect[i].imag * I;
+	}
+
+	/* Solve the system */
+	err = LAPACKE_zgesv (LAPACK_ROW_MAJOR, m, 1, Z, m, ipvt, y, 1);
+
+	/* Check for errors */
+	if (err < 0) {
+		fprintf (stderr, "Failed to solve system of equations.\n");
+		free (Z);
+		free (y);
+		return NULL;
+	}
+
+	else if (err > 0) {
+		fprintf (stderr, "Singular matrix.\n");
+		free (Z);
+		free (y);
+	}
+
+	/* Now copy the solutions into the vector res and return */
+	res = complexVectorInit2 (COLUMN_VECTOR, m);
+	if (res == 0x00) {
+		free (Z);
+		free (y);
+		return NULL;
+	}
+
+	for (i = 0; i < m; i++) {
+		res->vect[i].real = creal (y[i]);
+		res->vect[i].imag = cimag (y[i]);
+	}
+
+	return res;
+=======
+>>>>>>> 3eac36cb261b33b10bface505a3bb24359817128
 }
 
 /* Calculate the eigenvalues of the matrix */
