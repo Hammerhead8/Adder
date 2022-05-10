@@ -21,13 +21,10 @@ double gauss5 (adder_function *f, double a, double b);
 double gauss20 (adder_function *f, double a, double b);
 double gauss50 (adder_function *f, double a, double b);
 double gauss100 (adder_function *f, double a, double b);
-//double gaussQuad (adder_function *f, double *res, double a, double b, int N);
 int galeQuad (adder_function *f, double *res, double a, double b, int N);
 
 /*Other integration routines */
 double trapezoidIntegrate (adder_function *f, double a, double b, int N);
 double simpsonIntegrate (adder_function *f, double a, double b, int N);
 double monteCarloIntegrate (adder_function *f, double a, double b, long unsigned int N);
-//double mdMonteCarloIntegration (adder_muldim_function *f, double *a, double *b, long unsigned int dims, long unsigned int N);
-
 #endif
