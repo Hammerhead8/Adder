@@ -322,46 +322,50 @@ simpsonIntegrate (adder_function *f, double a, double b, int N)
 	return res;
 }
 
-/* Monte Carlo integration */
+/* Monte Carlo integration. /dev/urandom is used as a random seed with system time used
+ * as a fallback in case reading fails. The generator used is Xorshift. */
 double
 monteCarloIntegrate (adder_function *f, double a, double b, long unsigned int N)
 {
-	unsigned int seed;
+	long unsigned int v;
 	double x, y;
 	double mul1, mul2;
-	double result;
+	double result = 0;
 	int i;
-	int err;
+	int err = 0;
 	FILE *fp;
 
 	fp = fopen ("/dev/urandom", "r");
 	if (fp == 0) {
-		fprintf (stderr, "ERROR:  Failed to open /dev/urandom\n");
-		return INTEGRAL_ERROR;
+		err = 1;
 	}
 
-	err = fread (&seed, sizeof (unsigned int), 1, fp);
+	/* If fopen succeeded then read from /dev/urandom */
 	if (err == 0) {
-		fprintf (stderr, "ERROR:  failed to read from /dev/urandom\n");
+		err = fread (&v, sizeof (long unsigned int), 1, fp);
+		
+		/* If reading failed then fall back to using the system time */
+		if (err == 0) {
+			fclose (fp);
+			v = time (NULL);
+		}
+		
 		fclose (fp);
-		return INTEGRAL_ERROR;
 	}
-
-	fclose (fp);
+	
+	/* Otherwise use the system time as the seed */
+	else {
+		v = time (NULL);
+	}
 
 	/* Change the bounds of integration to be between 0 and 1 */
 	mul1 = (a - b) / (0 - 1);
 	mul2 = a - 0 * ((a - b) / (0 - 1));
 
-	/* Seed the random number generator */
-	srand (seed);
-
-	/* Set the result value to zero */
-	result = 0;
-
 	for (i = 0; i < N; i++) {
-		/* Generate a number between 0 and 1 */
-		x = (double)rand () / (double)RAND_MAX;
+		/* Generate a number between 0 and 1 using the Xorshift generator */
+		v = xor (v);
+		x = (double)v / (double)0xffffffffffffffff;
 		x = x * mul1 + mul2;
 
 		y = f->function (x);
@@ -373,4 +377,19 @@ monteCarloIntegrate (adder_function *f, double a, double b, long unsigned int N)
 	result /= (double)N;
 
 	return result;
+}
+
+/* Xorshift generator for Monte Carlo integration, which has better
+ * randomness properties than the standard rand function.
+ * The values 13, 17, and 5 in the xorshift operations are taken
+ * from George Marsaglia's recommended values in his paper
+ * "Xorshift RNGs" (https://doi.org/10.18637/jss.v008.i14) */
+long unsigned int
+xor (long unsigned int y)
+{
+	y ^= (y << 13);
+	y ^= (y >> 17);
+	y ^= (y << 5);
+	
+	return y;
 }

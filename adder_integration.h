@@ -27,4 +27,8 @@ int galeQuad (adder_function *f, double *res, double a, double b, int N);
 double trapezoidIntegrate (adder_function *f, double a, double b, int N);
 double simpsonIntegrate (adder_function *f, double a, double b, int N);
 double monteCarloIntegrate (adder_function *f, double a, double b, long unsigned int N);
+
+/* Other routines */
+long unsigned int xor (long unsigned int y);
+
 #endif
