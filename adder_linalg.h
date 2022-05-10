@@ -20,6 +20,9 @@ adder_vector * odLinearSolve (adder_matrix *M, adder_vector *b);
 adder_vector * linearLeastSquares (adder_matrix *M, adder_vector *b);
 adder_complex_vector * complexLinearSolve (adder_complex_matrix *M, adder_complex_vector *b);
 
+/* Curve fitting routines */
+adder_vector * exponentialFit (adder_matrix *M, adder_vector *b);
+
 /* Eigenvalues */
 adder_vector * eigenValues (adder_matrix *m);
 adder_complex_vector * complexEigenValues (adder_complex_matrix *m);
