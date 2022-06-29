@@ -19,13 +19,6 @@ VECTOR_ORDER
 	COLUMN_VECTOR = 1
 };
 
-enum
-MATRIX_ORIENTATION
-{
-	ROW_MAJOR = 1,
-	COLUMN_MAJOR = 2
-};
-
 /* Vector type definition */
 typedef struct
 {
@@ -40,7 +33,6 @@ typedef struct
 	double *mat;
 	int rows;
 	int columns;
-	int orientation;
 } adder_matrix;
 
 /* Vector IO functions */
@@ -58,8 +50,8 @@ int randVector (adder_vector *v);
 adder_vector * vectorTranspose (adder_vector *v);
 
 /* Matrix IO functions */
-adder_matrix * matrixInit (int orient, int numRows, int numColumns, double *values);
-adder_matrix *matrixInit2 (int orient, int numRows, int numcolumns);
+adder_matrix * matrixInit (int numRows, int numColumns, double *values);
+adder_matrix *matrixInit2 (int numRows, int numcolumns);
 void deleteMatrix (adder_matrix *m);
 void printMatrix (adder_matrix *m);
 

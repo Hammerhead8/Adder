@@ -222,7 +222,7 @@ vectorTranspose (adder_vector *v)
 
 /* Create a matrix and set its values */
 adder_matrix *
-matrixInit (int orient, int numRows, int numColumns, double *values)
+matrixInit (int numRows, int numColumns, double *values)
 {
 	adder_matrix *m;
 	int i, j;
@@ -242,37 +242,11 @@ matrixInit (int orient, int numRows, int numColumns, double *values)
 
 	m->rows = numRows;
 	m->columns = numColumns;
-
-	/* Check if the matrix is to be row or column major */
-	if (orient == ROW_MAJOR) {
-		m->orientation = ROW_MAJOR;
-
-		/* Enter the values */
-		for (i = 0; i < numRows; i++) {
-			for (j = 0; j < numColumns; j++) {
-				m->mat[i * numColumns + j] = values[i * numColumns + j];
-			}
-		}
-	}
-	else if (orient == COLUMN_MAJOR) {
-		m->orientation = COLUMN_MAJOR;
-
-		/* Enter the values */
-		for (i = 0; i < numRows; i++) {
-			for (j = 0; j < numColumns; j++) {
-				m->mat[i * numColumns + j] = values[j * numRows + i];
-			}
-		}
-	}
-	else {
-		fprintf (stderr, "Invalid orientation. Assuming row major.\n");
-		m->orientation = ROW_MAJOR;
-
-		/* Enter the values */
-		for (i = 0; i < numRows; i++) {
-			for (j = 0; j < numColumns; j++) {
-				m->mat[i * numColumns + j] = values[i * numColumns + j];
-			}
+	
+	/* Enter the values */
+	for (i = 0; i < numRows; i++) {
+		for (j = 0; j < numColumns; j++) {
+			m->mat[i * numColumns + j] = values[i * numColumns + j];
 		}
 	}
 
@@ -281,7 +255,7 @@ matrixInit (int orient, int numRows, int numColumns, double *values)
 
 /* Create a matrix without settings its values */
 adder_matrix *
-matrixInit2 (int orient, int numRows, int numColumns)
+matrixInit2 (int numRows, int numColumns)
 {
 	adder_matrix *m;
 	int i, j;
@@ -300,18 +274,6 @@ matrixInit2 (int orient, int numRows, int numColumns)
 
 	m->rows = numRows;
 	m->columns = numColumns;
-
-	/* Set the matrix to be either row or column major */
-	if (orient == ROW_MAJOR) {
-		m->orientation = ROW_MAJOR;
-	}
-	else if (orient == COLUMN_MAJOR) {
-		m->orientation = COLUMN_MAJOR;
-	}
-	else {
-		fprintf (stderr, "Invalid orientation. Assuming row major.\n");
-		m->orientation = ROW_MAJOR;
-	}
 
 	return m;
 }
