@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <time.h>
 #include "adder_integration.h"
 
 /* Three point Gauss-Legendre quadrature
