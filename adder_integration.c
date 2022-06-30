@@ -365,7 +365,7 @@ monteCarloIntegrate (adder_function *f, double a, double b, long unsigned int N)
 
 	for (i = 0; i < N; i++) {
 		/* Generate a number between 0 and 1 using the Xorshift generator */
-		v = xor (v);
+		v = xorshift (v);
 		x = (double)v / (double)0xffffffffffffffff;
 		x = x * mul1 + mul2;
 
@@ -386,7 +386,7 @@ monteCarloIntegrate (adder_function *f, double a, double b, long unsigned int N)
  * from George Marsaglia's recommended values in his paper
  * "Xorshift RNGs" (https://doi.org/10.18637/jss.v008.i14) */
 long unsigned int
-xor (long unsigned int y)
+xorshift (long unsigned int y)
 {
 	y ^= (y << 13);
 	y ^= (y >> 17);
