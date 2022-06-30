@@ -30,4 +30,7 @@ double simpsonIntegrate (adder_function *f, double a, double b, int N);
 double monteCarloIntegrate (adder_function *f, double a, double b, long unsigned int N);
 //double mdMonteCarloIntegration (adder_muldim_function *f, double *a, double *b, long unsigned int dims, long unsigned int N);
 
+/* Other functions */
+long unsigned int xorshift (long unsigned int y);
+
 #endif
