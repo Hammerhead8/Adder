@@ -627,16 +627,8 @@ matrixNorm (adder_matrix *M)
 	m = M->rows;
 	n = M->columns;
 
-	/* If the matrix is row major */
-	if (M->orientation == ROW_MAJOR) {
-		/* Calculate the frobinius norm */
-		res = LAPACKE_dlange (LAPACK_ROW_MAJOR, 'F', m, n, M->mat, n);
-	}
-
-	/* Otherwise the matrix is column major */
-	else {
-		res = LAPACKE_dlange (LAPACK_COL_MAJOR, 'F', m, n, M->mat, m);
-	}
+	/* Calculate the frobinius norm */
+	res = LAPACKE_dlange (LAPACK_ROW_MAJOR, 'F', m, n, M->mat, n);
 
 	return res;
 }
