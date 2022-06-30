@@ -32,7 +32,7 @@ inverse (adder_matrix *M)
 	}
 
 	/* Set res to be equal to M */
-	res = matrixInit (M->orientation, M->rows, M->columns, M->mat);
+	res = matrixInit (M->rows, M->columns, M->mat);
 	
 	/* Calculate the LU factorization of the matrix */
 	err = LAPACKE_dgetrf (LAPACK_ROW_MAJOR, n, m, res->mat, n, ipvt);
