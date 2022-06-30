@@ -242,7 +242,7 @@ matrixInit (int numRows, int numColumns, double *values)
 
 	m->rows = numRows;
 	m->columns = numColumns;
-	
+
 	/* Enter the values */
 	for (i = 0; i < numRows; i++) {
 		for (j = 0; j < numColumns; j++) {
@@ -328,17 +328,10 @@ mvMultiply (adder_matrix *M, adder_vector *v)
 
 	/* If the dimensions are valid then we can perform the multiplication */
 
-	/* Check if the matrix is row major or column major */
-	if (M->orientation == ROW_MAJOR) {
-		cblas_dgemv (CblasRowMajor, CblasNoTrans, M->rows, M->columns, 1.0, M->mat, M->columns, v->vect, 1, 0, res->vect, 1);
-		return res;
-	}
+/* Check if the matrix is row major or column major */
+	cblas_dgemv (CblasRowMajor, CblasNoTrans, M->rows, M->columns, 1.0, M->mat, M->columns, v->vect, 1, 0, res->vect, 1);
 
-	/* Otherwise the matrix must be column major */
-	else {
-		cblas_dgemv (CblasColMajor, CblasNoTrans, M->rows, M->columns, 1.0, M->mat, M->rows, v->vect, 1, 0, res->vect, 1);
-		return res;
-	}
+	return res;
 }
 
 /* Multiply two matrices */
@@ -362,33 +355,16 @@ mmMultiply (adder_matrix *A, adder_matrix *B)
 
 	/* We can now create the result matrix and multiply */
 
-	/* Check if the matrix is row major */
-	if (A->orientation == ROW_MAJOR) {
-		/* Create the result matrix */
-		res = matrixInit2 (ROW_MAJOR, A->rows, B->columns);
-		if (res == NULL) {
-			fprintf (stderr, "Failed to create result matrix.\n");
-			return NULL;
-		}
-
-		/* Now we can perform the multiplication */
-		cblas_dgemm (CblasRowMajor, CblasNoTrans, CblasNoTrans, A->rows, B->columns, A->columns, 1.0, A->mat, A->columns, B->mat, B->columns, 0.0, res->mat, res->columns);
-		return res;
+	/* Create the result matrix */
+	res = matrixInit2 (A->rows, B->columns);
+	if (res == NULL) {
+		fprintf (stderr, "Failed to create result matrix.\n");
+		return NULL;
 	}
 
-	/* Otherwise the matrix must be column major */
-	else {
-		/* Create the result matrix */
-		res = matrixInit2 (COLUMN_MAJOR, A->rows, B->columns);
-		if (res == NULL) {
-			fprintf (stderr, "Failed to create result matrix.\n");
-			return NULL;
-		}
-
-		/* Perform the multiplication */
-		cblas_dgemm (CblasColMajor, CblasNoTrans, CblasNoTrans, A->rows, B->columns, A->rows, 1.0, A->mat, A->columns, B->mat, B->rows, 0.0, res->mat, res->columns);
-		return res;
-	}
+	/* Now we can perform the multiplication */
+	cblas_dgemm (CblasRowMajor, CblasNoTrans, CblasNoTrans, A->rows, B->columns, A->columns, 1.0, A->mat, A->columns, B->mat, B->columns, 0.0, res->mat, res->columns);
+	return res;
 }
 
 /* Set the matrix to a zero matrix */
@@ -467,7 +443,7 @@ matrixTranspose (adder_matrix *m)
 	adder_matrix *T;
 	long int i, j;
 
-	T = matrixInit2 (ROW_MAJOR, m->columns, m->rows);
+	T = matrixInit2 (m->columns, m->rows);
 	if (T == 0x00) {
 		fprintf (stderr, "Failed to create transpose matrix.\n");
 		return 0x00;
