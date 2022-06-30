@@ -41,7 +41,7 @@ polynomialInterp (double *result, int n, double *x0, double *y0, double x2)
 	adder_vector *b;
 	adder_vector *resVect;
 
-	m = matrixInit2 (ROW_MAJOR, n, n);
+	m = matrixInit2 (n, n);
 	if (m == 0x00) {
 		return INIT_ERROR;
 	}
