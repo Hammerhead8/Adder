@@ -347,12 +347,6 @@ mmMultiply (adder_matrix *A, adder_matrix *B)
 		return NULL;
 	}
 
-	/* Also check that the orientations of the matrices match */
-	else if (A->orientation != B->orientation) {
-		fprintf (stderr, "ERROR:  Orientations of A and B don't match.\n");
-		return NULL;
-	}
-
 	/* We can now create the result matrix and multiply */
 
 	/* Create the result matrix */
