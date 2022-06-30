@@ -1,6 +1,6 @@
 # Adder
-Adder is a numerical library for C/C++ similar to the GNU Scientific Library. The difference is that it only includes
-that are most useful to me, which includes complex numbers, linear algebra, and random number generation.
+Adder is a numerical library for C/C++ similar to the GNU Scientific Library. The difference is that it only includes functions
+that are most useful to me, which includes complex numbers, linear algebra, and numerical integration and differentiation.
 This project came out of needing some of the features in GSL, but wanting an easier to use programming interface and not needing all of its features.
 
 Note that these functions are written and tested under Linux, so some functions might use features that are specific to Linux (i.e. /dev/urandom
