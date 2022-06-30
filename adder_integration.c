@@ -329,7 +329,7 @@ monteCarloIntegrate (adder_function *f, double a, double b, long unsigned int N)
 	long unsigned int v;
 	double x, y;
 	double mul1, mul2;
-	double result;
+	double result = 0;
 	int i;
 	int err = 0;
 	FILE *fp;
@@ -362,15 +362,9 @@ monteCarloIntegrate (adder_function *f, double a, double b, long unsigned int N)
 	mul1 = (a - b) / (0 - 1);
 	mul2 = a - 0 * ((a - b) / (0 - 1));
 
-	/* Seed the random number generator */
-	srand (seed);
-
-	/* Set the result value to zero */
-	result = 0;
-
 	for (i = 0; i < N; i++) {
-		/* Generate a number between 0 and 1 */
-		v = xor (v);
+		/* Generate a number between 0 and 1 using the Xorshoft generator */
+		v = xorshift (v);
 		x = (double)v / (double)0xffffffffffffffff;
 		x = x * mul1 + mul2;
 
@@ -391,8 +385,9 @@ monteCarloIntegrate (adder_function *f, double a, double b, long unsigned int N)
  * from George Marsaglia's recommended values in his paper
  * "Xorshift RNGs" (https://doi.org/10.18637/jss.v008.i14) */
 long unsigned int
-xor (long unsigned int y)
+xorshift (long unsigned int y)
 {
 	y ^= (y << 13);
 	y ^= (y >> 17);
 	y ^= (y << 5);
+}
