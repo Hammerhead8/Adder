@@ -33,60 +33,32 @@ inverse (adder_matrix *M)
 
 	/* Set res to be equal to M */
 	res = matrixInit (M->orientation, M->rows, M->columns, M->mat);
-
-	/* If the matrix is row major */
-	if (M->orientation == ROW_MAJOR) {	
-		/* Calculate the LU factorization of the matrix */
-		err = LAPACKE_dgetrf (LAPACK_ROW_MAJOR, n, m, res->mat, n, ipvt);
-		if (err < 0) {
-			fprintf (stderr, "The value of argument %d is illegal\n", -1 * err);
-			return NULL;
-		}
-		else if (err > 0) {
-			fprintf (stderr, "Factorization is singular.\n");
-			return NULL;
-		}
-
-		/* Invert the matrix */
-		err = LAPACKE_dgetri (LAPACK_ROW_MAJOR, n, res->mat, n, ipvt);
-
-		if (err == 0) {
-			return res;
-		}
-
-		if (err < 0) {
-			fprintf (stderr, "The value of argument %d is illegal\n", -1 * err);
-			return NULL;
-		}
-		else if (err > 0) {
-			fprintf (stderr, "Matrix is singular.\n");
-			return NULL;
-		}
+	
+	/* Calculate the LU factorization of the matrix */
+	err = LAPACKE_dgetrf (LAPACK_ROW_MAJOR, n, m, res->mat, n, ipvt);
+	if (err < 0) {
+		fprintf (stderr, "The value of argument %d is illegal\n", -1 * err);
+		return NULL;
+	}
+	else if (err > 0) {
+		fprintf (stderr, "Factorization is singular.\n");
+		return NULL;
 	}
 
-	/* Otherwise the matrix is column major */
-	else {
-		/* Calculate the LU factorization of the matrix */
-		err = LAPACKE_dgetrf (LAPACK_COL_MAJOR, m, n, res->mat, m, ipvt);
-		if (err < 0) {
-			fprintf (stderr, "The value of argument %d is illegal\n", -1 * err);
-			return NULL;
-		}
-		else if (err > 0) {
-			fprintf (stderr, "Factorization is singular.\n");
-			return NULL;
-		}
+	/* Invert the matrix */
+	err = LAPACKE_dgetri (LAPACK_ROW_MAJOR, n, res->mat, n, ipvt);
 
-		/* Invert the matrix */
-		err = LAPACKE_dgetri (LAPACK_COL_MAJOR, m, res->mat, m, ipvt);
-		if (err < 0) {
-			fprintf (stderr, "The value of argument %d is illegal\n", -1 * err);
-			return NULL;
-		}
-		else if (err > 0) {
-			fprintf (stderr, "Matrix is singular.\n");
-			return NULL;
-		}
+	if (err == 0) {
+		return res;
+	}
+
+	if (err < 0) {
+		fprintf (stderr, "The value of argument %d is illegal\n", -1 * err);
+		return NULL;
+	}
+	else if (err > 0) {
+		fprintf (stderr, "Matrix is singular.\n");
+		return NULL;
 	}
 
 	return 0;
@@ -126,7 +98,7 @@ pseudoinverse (adder_matrix *m)
 		aDimMax = max (aRows, aColumns);
 
 		/* Create a matrix called u, which the orthogonal matrix to m */
-		u = matrixInit2 (m->orientation, aRows, aRows);
+		u = matrixInit2 (aRows, aRows);
 		if (u == 0x00) {
 			deleteMatrix (A);
 			return 0x00;
@@ -141,7 +113,7 @@ pseudoinverse (adder_matrix *m)
 		}
 
 		/* Create sMatrix, which is s represented as a diagonal matrix */
-		sMatrix = matrixInit2 (m->orientation, aRows, aColumns);
+		sMatrix = matrixInit2 (aRows, aColumns);
 		if (sMatrix == 0x00) {
 			deleteMatrix (A);
 			deleteMatrix (u);
@@ -150,7 +122,7 @@ pseudoinverse (adder_matrix *m)
 		}
 
 		/* Create the vt matrix */
-		vt = matrixInit2 (m->orientation, aColumns, aColumns);
+		vt = matrixInit2 (aColumns, aColumns);
 		if (vt == 0x00) {
 			deleteMatrix (A);
 			deleteMatrix (u);
@@ -159,7 +131,7 @@ pseudoinverse (adder_matrix *m)
 		}
 
 		/* Create the vts matrix, which is the result of VT * s */
-		vts = matrixInit2 (m->orientation, aColumns, aRows);
+		vts = matrixInit2 (aColumns, aRows);
 		if (vts == 0x00) {
 			deleteMatrix (A);
 			deleteMatrix (u);
@@ -170,7 +142,7 @@ pseudoinverse (adder_matrix *m)
 		}
 
 		/* Create the solution matrix, which is the result of vts * U */
-		res = matrixInit2 (m->orientation, aColumns, aRows);
+		res = matrixInit2 (aColumns, aRows);
 		if (res == 0x00) {
 			deleteMatrix (A);
 			deleteMatrix (u);
@@ -190,7 +162,7 @@ pseudoinverse (adder_matrix *m)
 		aDimMax = max (aRows, aColumns);
 
 		/* Create a matrix called u, which the orthogonal matrix to m */
-		u = matrixInit2 (m->orientation, aRows, aRows);
+		u = matrixInit2 (aRows, aRows);
 		if (u == 0x00) {
 			deleteMatrix (A);
 			return 0x00;
@@ -217,7 +189,7 @@ pseudoinverse (adder_matrix *m)
 	/*	}*/
 
 		/* Create sMatrix, which is s represented as a diagonal matrix */
-		sMatrix = matrixInit2 (m->orientation, aRows, aColumns);
+		sMatrix = matrixInit2 (aRows, aColumns);
 		if (sMatrix == 0x00) {
 			deleteMatrix (A);
 			deleteMatrix (u);
@@ -226,7 +198,7 @@ pseudoinverse (adder_matrix *m)
 		}
 
 		/* Create the vt matrix */
-		vt = matrixInit2 (m->orientation, aColumns, aColumns);
+		vt = matrixInit2 (aColumns, aColumns);
 		if (vt == 0x00) {
 			deleteMatrix (A);
 			deleteMatrix (u);
@@ -235,7 +207,7 @@ pseudoinverse (adder_matrix *m)
 		}
 
 		/* Create the vts matrix, which is the result of VT * s */
-		vts = matrixInit2 (m->orientation, aColumns, aRows);
+		vts = matrixInit2 (aColumns, aRows);
 		if (vts == 0x00) {
 			deleteMatrix (A);
 			deleteMatrix (u);
@@ -246,7 +218,7 @@ pseudoinverse (adder_matrix *m)
 		}
 
 		/* Create the solution matrix, which is the result of vts * U */
-		res = matrixInit2 (m->orientation, aColumns, aRows);
+		res = matrixInit2 (aColumns, aRows);
 		if (res == 0x00) {
 			deleteMatrix (A);
 			deleteMatrix (u);
@@ -259,43 +231,28 @@ pseudoinverse (adder_matrix *m)
 	}
 
 	/* Create a copy of m called A so m doesn't get overwritten */
-	A = matrixInit (m->orientation, aRows, aColumns, m->mat);
+	A = matrixInit (aRows, aColumns, m->mat);
 	if (A == 0x00) {
 		return 0x00;
 	}
+	
+	err = LAPACKE_dgesdd (LAPACK_ROW_MAJOR, 'A', A->rows, A->columns, A->mat, A->columns, s->vect, u->mat, u->columns, vt->mat, vt->columns);
 
-	/* Calculate the singular value decomposition */
-	if (m->orientation == ROW_MAJOR) {
-		err = LAPACKE_dgesdd (LAPACK_ROW_MAJOR, 'A', A->rows, A->columns, A->mat, A->columns, s->vect, u->mat, u->columns, vt->mat, vt->columns);
-
-		if (err < 0) {
-			if (err == -4) {
-				fprintf (stderr, "ERROR:  A matrix has a NAN entry.\n");
-				deleteMatrix (A);
-				deleteMatrix (u);
-				deleteVector (s);
-				deleteMatrix (sMatrix);
-				deleteMatrix (vt);
-				deleteMatrix (vts);
-				deleteMatrix (res);
-				return 0x00;
-			}
-
-			else {
-				fprintf (stderr, "ERROR:  Illegal argument number %d in SVD subroutine in function pseudoinverse.\n", -1 * err);
-				deleteMatrix (A);
-				deleteMatrix (u);
-				deleteVector (s);
-				deleteMatrix (sMatrix);
-				deleteMatrix (vt);
-				deleteMatrix (vts);
-				deleteMatrix (res);
-				return 0x00;
-			}
+	if (err < 0) {
+		if (err == -4) {
+			fprintf (stderr, "ERROR:  A matrix has a NAN entry.\n");
+			deleteMatrix (A);
+			deleteMatrix (u);
+			deleteVector (s);
+			deleteMatrix (sMatrix);
+			deleteMatrix (vt);
+			deleteMatrix (vts);
+			deleteMatrix (res);
+			return 0x00;
 		}
 
-		else if (err > 0) {
-			fprintf (stderr, "ERROR:  DBDSDC subroutine did not converge in function pseudoInverse\n");
+		else {
+			fprintf (stderr, "ERROR:  Illegal argument number %d in SVD subroutine in function pseudoinverse.\n", -1 * err);
 			deleteMatrix (A);
 			deleteMatrix (u);
 			deleteVector (s);
@@ -307,46 +264,16 @@ pseudoinverse (adder_matrix *m)
 		}
 	}
 
-	else {
-		err = LAPACKE_dgesdd (LAPACK_COL_MAJOR, 'A', A->rows, A->columns, A->mat, A->rows, s->vect, u->mat, u->rows, vt->mat, vt->rows);
-
-		if (err < 0) {
-			if (err == -4) {
-				fprintf (stderr, "ERROR:  A matrix has a NAN entry.\n");
-				deleteMatrix (A);
-				deleteMatrix (u);
-				deleteVector (s);
-				deleteMatrix (sMatrix);
-				deleteMatrix (vt);
-				deleteMatrix (vts);
-				deleteMatrix (res);
-				return 0x00;
-			}
-
-			else {
-				fprintf (stderr, "ERROR:  Illegal argument number %d in SVD subroutine in function pseudoinverse.\n", -1 * err);
-				deleteMatrix (A);
-				deleteMatrix (u);
-				deleteVector (s);
-				deleteMatrix (sMatrix);
-				deleteMatrix (vt);
-				deleteMatrix (vts);
-				deleteMatrix (res);
-				return 0x00;
-			}
-		}
-
-		else if (err > 0) {
-			fprintf (stderr, "ERROR:  DBDSDC subroutine did not converge in function pseudoInverse\n");
-			deleteMatrix (A);
-			deleteMatrix (u);
-			deleteVector (s);
-			deleteMatrix (sMatrix);
-			deleteMatrix (vt);
-			deleteMatrix (vts);
-			deleteMatrix (res);
-			return 0x00;
-		}
+	else if (err > 0) {
+		fprintf (stderr, "ERROR:  DBDSDC subroutine did not converge in function pseudoInverse\n");
+		deleteMatrix (A);
+		deleteMatrix (u);
+		deleteVector (s);
+		deleteMatrix (sMatrix);
+		deleteMatrix (vt);
+		deleteMatrix (vts);
+		deleteMatrix (res);
+		return 0x00;
 	}
 
 	vtNew = vt->mat;
@@ -374,17 +301,9 @@ pseudoinverse (adder_matrix *m)
 	vtNew = 0x00;
 
 	/* Multiply VT' * S' = VTS, followed by VTS * U = res */
-	if (m->orientation == ROW_MAJOR) {
-		cblas_dgemm (CblasRowMajor, CblasTrans, CblasTrans, vt->rows, sMatrix->columns, vt->columns, 1.0, vt->mat, vt->columns, sMatrix->mat, sMatrix->columns, 0.0, vts->mat, vts->columns);
+	cblas_dgemm (CblasRowMajor, CblasTrans, CblasTrans, vt->rows, sMatrix->columns, vt->columns, 1.0, vt->mat, vt->columns, sMatrix->mat, sMatrix->columns, 0.0, vts->mat, vts->columns);
 
-		cblas_dgemm (CblasRowMajor, CblasNoTrans, CblasTrans, vts->rows, u->columns, vts->columns, 1.0, vts->mat, vts->columns, u->mat, u->columns, 0.0, res->mat, res->columns);
-	}
-
-	else {
-		cblas_dgemm (CblasColMajor, CblasNoTrans, CblasTrans, vt->rows, sMatrix->columns, vt->columns, 1.0, vt->mat, vt->rows, sMatrix->mat, sMatrix->rows, 0.0, vts->mat, vts->rows);
-
-		cblas_dgemm (CblasColMajor, CblasNoTrans, CblasTrans, vts->rows, u->columns, vts->columns, 1.0, vts->mat, vts->rows, u->mat, u->rows, 0.0, res->mat, res->rows);
-	}
+	cblas_dgemm (CblasRowMajor, CblasNoTrans, CblasTrans, vts->rows, u->columns, vts->columns, 1.0, vts->mat, vts->columns, u->mat, u->columns, 0.0, res->mat, res->columns);
 
 	/* The last step is to transpose the solution matrix if
 	 * the input matrix was transposed */
@@ -437,50 +356,24 @@ linearSolve (adder_matrix *M, adder_vector *b)
 	/* Since M is square, the number of rows and columns is the same, so
 	 * n is the same regardless */
 	n = M->rows;
+	
+	/* Solve the system */
+	err = LAPACKE_dgesv (LAPACK_ROW_MAJOR, n, 1, M->mat, n, ipvt, res->vect, 1);
 
-	/* If the M is row major */
-	if (M->orientation == ROW_MAJOR) {
-		/* Solve the system */
-		err = LAPACKE_dgesv (LAPACK_ROW_MAJOR, n, 1, M->mat, n, ipvt, res->vect, 1);
-
-		/* If no errors occured return the solution */
-		if (err == 0) {
-			return res;
-		}
-
-		/* Check for errors */
-		if (err < 0) {
-			fprintf (stderr, "Argument %d is invalid.\n", -1 * err);
-			deleteVector (res);
-			return NULL;
-		}
-		else if (err > 0) {
-			fprintf (stderr, "Factorization creates singular matrix.\n");
-			deleteVector (res);
-			return NULL;
-		}
+	/* If no errors occured return the solution */
+	if (err == 0) {
+		return res;
 	}
 
-	/* Otherwise M is column major */
-	else {
-		err = LAPACKE_dgesv (LAPACK_COL_MAJOR, n, 1, M->mat, n, ipvt, res->vect, 1);
-
-		/* If no errors occured return the solution */
-		if (err == 0) {
-			return res;
-		}
-
-		/* Check for errors */
-		else if (err < 0) {
-			fprintf (stderr, "Argument %d is invalid.\n", -1 * err);
-			deleteVector (res);
-			return NULL;
-		}
-		else {
-			fprintf (stderr, "Factorization creates singular matrix.\n");
-			deleteVector (res);
-			return NULL;
-		}
+	/* Check for errors */
+	if (err < 0) {
+		fprintf (stderr, "Argument %d is invalid.\n", -1 * err);
+		deleteVector (res);
+		return NULL;
+	}
+	else if (err > 0) {
+		fprintf (stderr, "Factorization creates singular matrix.\n");
+		deleteVector (res);
 	}
 }
 
@@ -496,49 +389,24 @@ odLinearSolve (adder_matrix *A, adder_vector *b)
 	/* Create a result matrix to prevent overwriting b */
 //	res = b;
 	memcpy (res->vect, b->vect, sizeof (double) * b->size);
+	
+	err = LAPACKE_dgels (LAPACK_ROW_MAJOR, 'N', A->rows, A->columns, 1, A->mat, A->columns, res->vect, 1);
 
-	/* If the matrix is row major */
-	if (A->orientation == ROW_MAJOR) {
-		err = LAPACKE_dgels (LAPACK_ROW_MAJOR, 'N', A->rows, A->columns, 1, A->mat, A->columns, res->vect, 1);
+	/* If no errors occured then return the solution vector */
+	if (err == 0 ) {
+		res->vect = realloc (res->vect, sizeof (double) * A->columns);
+		res->size = A->columns;
+		return res;
+	}
 
-		/* If no errors occured then return the solution vector */
-		if (err == 0 ) {
-			res->vect = realloc (res->vect, sizeof (double) * A->columns);
-			res->size = A->columns;
-			return res;
-		}
-
-		else if (err < 0) {
-			fprintf (stderr, "Argument %d is invalid.\n", -1 * err);
-			return NULL;
-		}
-
-		else {
-			fprintf (stderr, "Solution could not be computed\n");
-			return NULL;
-		}
+	else if (err < 0) {
+		fprintf (stderr, "Argument %d is invalid.\n", -1 * err);
+		return NULL;
 	}
 
 	else {
-		err = LAPACKE_dgels (LAPACK_COL_MAJOR, 'N', A->rows, A->columns, 1, A->mat, A->rows, res->vect, 1);
-
-
-		/* If now errors occured then return the solution vector */
-		if (err == 0) {
-			res->vect = realloc (res->vect, sizeof (double) * A->columns);
-			res->size = A->columns;
-			return res;
-		}
-
-		else if (err < 0) {
-			fprintf (stderr, "Argument %d is invalid.\n", -1 * err);
-			return NULL;
-		}
-
-		else {
-			fprintf (stderr, "Solution could not be computed\n");
-			return NULL;
-		}
+		fprintf (stderr, "Solution could not be computed\n");
+		return NULL;
 	}
 }
 
@@ -574,46 +442,23 @@ linearLeastSquares (adder_matrix *M, adder_vector *b)
 		deleteVector (res);
 		return 0x00;
 	}
+	
+	rank = M->columns;
 
-	/* Calculate the solution to the least squares approximation */
-	if (M->orientation == ROW_MAJOR) {
-		rank = M->columns;
+	err = LAPACKE_dgelsy (LAPACK_ROW_MAJOR, M->rows, M->columns, 1, M->mat, M->columns, res->vect, 1, jpvt, 1e-8, &rank);
+	if (err == 0) {
+		free (jpvt);
 
-		err = LAPACKE_dgelsy (LAPACK_ROW_MAJOR, M->rows, M->columns, 1, M->mat, M->columns, res->vect, 1, jpvt, 1e-8, &rank);
-		if (err == 0) {
-			free (jpvt);
-
-			/* Resize the solution vector to contain only the solution coefficients */
-			res->vect = realloc (res->vect, M->columns * sizeof (double));
-			res->size = M->columns;
-			return res;
-		}
-		else {
-			fprintf (stderr, "ERROR:  illegal argument number %d in LAPACKE_dgelsy subroutine in function linearLeastSquares.\n", -1 * err);
-			free (jpvt);
-			deleteVector (res);
-			return 0x00;
-		}
+		/* Resize the solution vector to contain only the solution coefficients */
+		res->vect = realloc (res->vect, M->columns * sizeof (double));
+		res->size = M->columns;
+		return res;
 	}
-
 	else {
-		rank = M->rows;
-
-		err = LAPACKE_dgelsy (LAPACK_COL_MAJOR, M->rows, M->columns, 1, M->mat, M->rows, res->vect, 1, jpvt, 1e-8, &rank);
-		if (err == 0) {
-			free (jpvt);
-
-			/* Resize the solution vector to contain only the solution coefficients */
-			res->vect = realloc (res->vect, M->rows * sizeof (double));
-			res->size = M->rows;
-			return res;
-		}
-		else {
-			fprintf (stderr, "ERROR:  illegal argument number %d in LAPACKE_dgelsy subroutine in function linearLeastSquares.\n", -1 * err);
-			free (jpvt);
-			deleteVector (res);
-			return 0x00;
-		}
+		fprintf (stderr, "ERROR:  illegal argument number %d in LAPACKE_dgelsy subroutine in function linearLeastSquares.\n", -1 * err);
+		free (jpvt);
+		deleteVector (res);
+		return 0x00;
 	}
 }
 
@@ -653,75 +498,28 @@ eigenValues (adder_matrix *M)
 		return NULL;
 	}
 
-/*	vl = malloc (n * sizeof (double));*/
-/*	if (vl == NULL) {*/
-/*		deleteVector (res);*/
-/*		free (wr);*/
-/*		free (wi);*/
-/*		return NULL;*/
-/*	}*/
+	/* Calculate the eigenvalues */
+	err = LAPACKE_dgeev (LAPACK_ROW_MAJOR, 'N', 'N', n, M->mat, n, res->vect, wi, vl, n, vr, n);
 
-/*	vr = malloc (n * sizeof (double));*/
-/*	if (vr == NULL) {*/
-/*		deleteVector (res);*/
-/*		free (wr);*/
-/*		free (wi);*/
-/*		free (vl);*/
-/*		return NULL;*/
-/*	}*/
-
-/*	 If the matrix is row major */
-	if (M->orientation == ROW_MAJOR) {
-		/* Calculate the eigenvalues */
-		err = LAPACKE_dgeev (LAPACK_ROW_MAJOR, 'N', 'N', n, M->mat, n, res->vect, wi, vl, n, vr, n);
-
-		/* Check for errors */
-		if (err == 0) {
-			free (wr);
-			free (wi);
-			return res;
-		}
-		else if (err < 0) {
-			fprintf (stderr, "Invalid arguments.\n");
-			deleteVector (res);
-			free (wr);
-			free (wi);
-			return NULL;
-		}
-		else {
-			fprintf (stderr, "Failed to calculate the eigenvalues.\n");
-			deleteVector (res);
-			free (wr);
-			free (wi);
-			return NULL;
-		}
+	/* Check for errors */
+	if (err == 0) {
+		free (wr);
+		free (wi);
+		return res;
 	}
-
-	/* Otherwise the matrix is column major */
+	else if (err < 0) {
+		fprintf (stderr, "Invalid arguments.\n");
+		deleteVector (res);
+		free (wr);
+		free (wi);
+		return NULL;
+	}
 	else {
-		/* Calculate the eigenvalues */
-		err = LAPACKE_dgeev (LAPACK_COL_MAJOR, 'N', 'N', n, M->mat, n, res->vect, wi, vl, n, vr, n);
-
-		/* Check for errors */
-		if (err == 0) {
-			free (wr);
-			free (wi);
-			return res;
-		}
-		else if (err < 0) {
-			fprintf (stderr, "Invalid arguments.\n");
-			deleteVector (res);
-			free (wr);
-			free (wi);
-			return NULL;
-		}
-		else {
-			fprintf (stderr, "Failed to calculate the eigenvalues.\n");
-			deleteVector (res);
-			free (wr);
-			free (wi);
-			return NULL;
-		}
+		fprintf (stderr, "Failed to calculate the eigenvalues.\n");
+		deleteVector (res);
+		free (wr);
+		free (wi);
+		return NULL;
 	}
 }
 
@@ -737,13 +535,13 @@ svd (adder_matrix *m)
 	int err;
 
 	/* Create a copy of m called A so m doesn't get overwritten */
-	A = matrixInit (m->orientation, m->rows, m->columns, m->mat);
+	A = matrixInit (m->rows, m->columns, m->mat);
 	if (A == 0x00) {
 		return 0x00;
 	}
 
 	/* Create a matrix called u, which the orthogonal matrix to m */
-	u = matrixInit2 (m->orientation, m->rows, m->rows);
+	u = matrixInit2 (m->rows, m->rows);
 	if (u == 0x00) {
 		deleteMatrix (A);
 		return 0x00;
@@ -764,7 +562,7 @@ svd (adder_matrix *m)
 	}
 
 	/* Create the vt matrix */
-	vt = matrixInit2 (m->orientation, m->columns, m->columns);
+	vt = matrixInit2 (m->columns, m->columns);
 	if (vt == 0x00) {
 		deleteMatrix (A);
 		deleteMatrix (u);
@@ -773,29 +571,19 @@ svd (adder_matrix *m)
 	}
 
 	/* Calculate the singular value decomposition */
-	if (m->orientation == ROW_MAJOR) {
-		err = LAPACKE_dgesdd (LAPACK_ROW_MAJOR, 'A', A->rows, A->columns, A->mat, A->columns, s->vect, u->mat, u->columns, vt->mat, vt->columns);
+	err = LAPACKE_dgesdd (LAPACK_ROW_MAJOR, 'A', A->rows, A->columns, A->mat, A->columns, s->vect, u->mat, u->columns, vt->mat, vt->columns);
 
-		if (err < 0) {
-			if (err == -4) {
-				fprintf (stderr, "ERROR:  A matrix has a NAN entry.\n");
-				deleteMatrix (A);
-				deleteMatrix (u);
-				deleteVector (s);
-				return 0x00;
-			}
-
-			else {
-				fprintf (stderr, "ERROR:  Illegal argument number %d in SVD subroutine in function pseudoinverse.\n", -1 * err);
-				deleteMatrix (A);
-				deleteMatrix (u);
-				deleteVector (s);
-				return 0x00;
-			}
+	if (err < 0) {
+		if (err == -4) {
+			fprintf (stderr, "ERROR:  A matrix has a NAN entry.\n");
+			deleteMatrix (A);
+			deleteMatrix (u);
+			deleteVector (s);
+			return 0x00;
 		}
 
-		else if (err > 0) {
-			fprintf (stderr, "ERROR:  DBDSDC subroutine did not converge in function pseudoInverse\n");
+		else {
+			fprintf (stderr, "ERROR:  Illegal argument number %d in SVD subroutine in function pseudoinverse.\n", -1 * err);
 			deleteMatrix (A);
 			deleteMatrix (u);
 			deleteVector (s);
@@ -803,34 +591,12 @@ svd (adder_matrix *m)
 		}
 	}
 
-	else {
-		err = LAPACKE_dgesdd (LAPACK_COL_MAJOR, 'A', A->rows, A->columns, A->mat, A->rows, s->vect, u->mat, u->rows, vt->mat, vt->rows);
-
-		if (err < 0) {
-			if (err == -4) {
-				fprintf (stderr, "ERROR:  A matrix has a NAN entry.\n");
-				deleteMatrix (A);
-				deleteMatrix (u);
-				deleteVector (s);
-				return 0x00;
-			}
-
-			else {
-				fprintf (stderr, "ERROR:  Illegal argument number %d in SVD subroutine in function pseudoinverse.\n", -1 * err);
-				deleteMatrix (A);
-				deleteMatrix (u);
-				deleteVector (s);
-				return 0x00;
-			}
-		}
-
-		else if (err > 0) {
-			fprintf (stderr, "ERROR:  DBDSDC subroutine did not converge in function pseudoInverse\n");
-			deleteMatrix (A);
-			deleteMatrix (u);
-			deleteVector (s);
-			return 0x00;
-		}
+	else if (err > 0) {
+		fprintf (stderr, "ERROR:  DBDSDC subroutine did not converge in function pseudoInverse\n");
+		deleteMatrix (A);
+		deleteMatrix (u);
+		deleteVector (s);
+		return 0x00;
 	}
 
 	return s;
@@ -873,14 +639,4 @@ matrixNorm (adder_matrix *M)
 	}
 
 	return res;
-
-	/* Multiply the matrix with its transpose using cblas_dgemm */
-/*	cblas_dgemm (CblasRowMajor, CblasTrans, CblasNoTrans, m, n, k, 1.0, M->mat, k, M->mat, n, 0.0, res->mat, n);*/
-
-	/* Calculate the trace of the product matrix */
-/*	for (i = 0; i < m; i++) {*/
-/*		trace += res->mat[i * m + i];*/
-/*	}*/
-
-/*	return sqrt (trace);*/
 }
