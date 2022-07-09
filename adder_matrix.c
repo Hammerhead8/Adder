@@ -416,7 +416,14 @@ printMatrix (adder_matrix *m)
 
 	for (i = 0; i < m->rows; i++) {
 		for (j = 0; j < m->columns; j++) {
-			printf ("%lf ", m->mat[i * m->columns + j]);
+			/* Align values along columns when printing  */
+			if (m->mat[i * m->columns + j] >= 0) {
+				printf (" %10.6e  ", m->mat[i * m->columns + j]);
+			}
+
+			else {
+				printf ("%10.6e  ", m->mat[i * m->columns + j]);
+			}
 		}
 
 		printf ("\n");
