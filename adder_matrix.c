@@ -514,7 +514,13 @@ printComplexMatrix (adder_complex_matrix *Z)
 	/* If the matrix is row major then the data is along the rows */
 	for (i = 0; i < Z->rows; i++) {
 		for (j = 0; j < Z->columns; j++) {
-			printf ("%.8lf%+.8lfj ", Z->mat[i * Z->columns + j].real, Z->mat[i * Z->columns + j].imag);
+			if (Z->mat[i * Z->columns + j].real > 0) {
+				printf (" %10.6e%+10.6ej  ", Z->mat[i * Z-.columns + j].real, Z->mat[i * Z->columns + j].imag);
+			}
+
+			else {
+				printf (" %10.6e%+10.6ej  ", Z->mat[i * Z-.columns + j].real, Z->mat[i * Z->columns + j].imag);
+			}
 		}
 
 		printf ("\n");
