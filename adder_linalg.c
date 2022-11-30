@@ -535,6 +535,7 @@ exponentialFit (adder_matrix *M, adder_vector *b)
 	free (pvt);
 
 	return res;
+}
 
 
 /* Calculate the eigenvalues of the matrix */
