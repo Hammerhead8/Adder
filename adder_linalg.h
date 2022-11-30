@@ -18,6 +18,7 @@ adder_vector * linearLeastSquares (adder_matrix *M, adder_vector *b);
 
 /* Curve fitting functions */
 adder_vector * exponentialFit (adder_matrix *M, adder_vector *b);
+adder_vector * powerFit (adder_matrix *M, adder_vector *b);
 
 /* Eigenvalues */
 adder_vector * eigenValues (adder_matrix *m);
