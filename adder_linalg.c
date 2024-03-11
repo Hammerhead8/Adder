@@ -462,6 +462,157 @@ linearLeastSquares (adder_matrix *M, adder_vector *b)
 	}
 }
 
+/* Calculate the exponential curve to fit data using linearization.
+ * The linearized equation is of the form ln(y) = ln(a) + bx = A + bx
+ * The calculated equation is of the form y = a*e^(bx).
+ * The coefficient are returned as a column vector of the form [a, b]'. */
+adder_vector *
+exponentialFit (adder_matrix *M, adder_vector *b)
+{
+	int m, n;
+	int *pvt;
+	int rank;
+	int err;
+	double temp;
+	adder_vector *res;
+	int i;
+
+	m = M->rows;
+	n = M->columns;
+
+	/* Check that the right-side vector is a column vector */
+	if (b->orientation == ROW_VECTOR) {
+		fprintf (stderr, "ERROR:  b vector must be a column vector.\n");
+		return NULL;
+	}
+
+	/* Check that M and b have the same number of rows */
+	if (M->rows != b->size) {
+		fprintf (stderr, "ERROR:  Invalid dimensions. Matrix has dimensions %dx%d and vector has dimensions %dx1.\n", m, n, b->size);
+		return NULL;
+	}
+
+	pvt = malloc (n * sizeof (int));
+	if (pvt == 0x00) {
+		return NULL;
+	}
+
+	/* Linearize the values in the right-side vector by taking the natural log of each value */
+	for (i = 0; i < b->size; i++) {
+		b->vect[i] = log (b->vect[i]);
+	}
+
+	res = vectorInit (COLUMN_VECTOR, b->size, b->vect);
+	if (res == 0x00) {
+		free (pvt);
+		return NULL;
+	}
+
+	/* Calculate the coefficients using linear least squares.
+	 * res will be of the form res = [b a]' */
+	err = LAPACKE_dgelsy (LAPACK_ROW_MAJOR, m, n, 1, M->mat, n, res->vect, 1, pvt, 1e-8, &rank);
+
+	if (err < 0) {
+		fprintf (stderr, "Failed to calculate the best-fit curve.\n");
+		free (pvt);
+		deleteVector (res);
+		return NULL;
+	}
+
+	/* Resize res so that it only contains the solution coefficients */
+	res->vect = realloc (res->vect, n * sizeof (double));
+	res->size = n;
+
+	/* Since the coefficients were calculated by linearizing an exponential equation, we need to convert the coefficients back to exponential.
+	 * a = exp (A) */
+	res->vect[1] = exp (res->vect[1]);
+
+	/* Switch the elements in res so res is of the form res = [a b]' */
+	temp = res->vect[0];
+	res->vect[0] = res->vect[1];
+	res->vect[1] = temp;
+
+	free (pvt);
+
+	return res;
+}
+
+/* Calculate the exponential curve to fit data using linearization.
+ * The linearized equation is of the form ln(y) = ln(a) + b * ln(x) = A + b * X
+ * The calculated equation is of the form y = a*x^b */
+adder_vector *
+powerFit (adder_matrix *M, adder_vector *b)
+{
+	int m, n;
+	int *pvt;
+	int rank;
+	int err;
+	double temp;
+	adder_vector *res;
+	int i;
+
+	m = M->rows;
+	n = M->columns;
+
+	/* Check that the right-side vector is a column vector */
+	if (b->orientation == ROW_VECTOR) {
+		fprintf (stderr, "ERROR:  b vector must be a column vector.\n");
+		return NULL;
+	}
+
+	/* Check that M and b have the same number of rows */
+	if (M->rows != b->size) {
+		fprintf (stderr, "ERROR:  Invalid dimensions. Matrix has dimensions %dx%d and vector has dimensions %dx1.\n", m, n, b->size);
+		return NULL;
+	}
+
+	pvt = malloc (n * sizeof (int));
+	if (pvt == 0x00) {
+		return NULL;
+	}
+
+	/* Linearize the values in the right-side vector and the first column of the matrix
+	 * by taking the natural log of each value. This gives the natural log of y and x. */
+	for (i = 0; i < b->size; i++) {
+		b->vect[i] = log (b->vect[i]);
+		M->mat[2 * i] = log (M->mat[2 * i]);
+	}
+
+	res = vectorInit (COLUMN_VECTOR, b->size, b->vect);
+	if (res == 0x00) {
+		free (pvt);
+		return NULL;
+	}
+
+	/* Calculate the coefficients using linear least squares.
+	 * res will be of the form res = [b a]' */
+	err = LAPACKE_dgelsy (LAPACK_ROW_MAJOR, m, n, 1, M->mat, n, res->vect, 1, pvt, 1e-8, &rank);
+
+	if (err < 0) {
+		fprintf (stderr, "Failed to calculate the best-fit curve.\n");
+		free (pvt);
+		deleteVector (res);
+		return NULL;
+	}
+
+	/* Resize res so that it only contains the solution coefficients */
+	res->vect = realloc (res->vect, n * sizeof (double));
+	res->size = n;
+
+	/* Since the coefficients were calculated by linearizing an exponential equation, we need to convert the coefficients back to exponential.
+	 * a = exp (A) */
+	res->vect[1] = exp (res->vect[1]);
+
+	/* Switch the elements in res so res is of the form res = [a b]' */
+	temp = res->vect[0];
+	res->vect[0] = res->vect[1];
+	res->vect[1] = temp;
+
+	free (pvt);
+
+	return res;
+}
+
 /* Calculate the eigenvalues of the matrix */
 adder_vector *
 eigenValues (adder_matrix *M)
