@@ -325,17 +325,42 @@ randVector (adder_vector *v)
  **************************/
 
 /* Transpose a real-valued vector */
+/* Transpose a real-valued vector */
 void
-vectorTranspose (adder_vector *v)
+vectorTranspose (adder_vector * v)
 {
 	v->orientation *= -1;
 }
 
 /* Transpose a complex-valued vector */
 void
-complexVectorTranspose (adder_complex_vector *z)
+complexVectorTranspose (adder_complex_vector * z)
 {
-    z->orientation *= -1;
+	z->orientation *= -1;
+}
+
+/* Calculate the dot product of two real-valued vectors */
+double
+dotProduct (adder_vector *v1, adder_vector *v2)
+{
+	double res;
+
+	res = cblas_ddot (v1->size, v1->vect, 1, v2->vect, 1);
+	return res;
+}
+
+/* Normalize the vector V */
+void
+normalizeVector (adder_vector *V, adder_vector *v)
+{
+	double vMag;
+	
+	/* Calculate the norm of the original vector */
+	vMag = cblas_dnrm2 (V->size, V->vect, 1);
+	
+	for (i = 0; i < V->size; i++) {
+		v->vect[i] = V->vect[i] / vMag;
+	}
 }
 
 /********************
