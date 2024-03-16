@@ -340,10 +340,18 @@ complexVectorTranspose (adder_complex_vector * z)
 }
 
 /* Calculate the dot product of two real-valued vectors */
-double
-dotProduct (adder_vector *v1, adder_vector *v2)
+int
+dotProduct (adder_vector *v1, adder_vector *v2, double *res)
 {
-	double res;
+	if (v1->size != v2->size) {
+		fprintf (stderr, "ERROR:  Vector sizes do not match\n");
+		return DIMENSION_ERROR;
+	}
+	
+	if (v1->orientation != v2->orientation) {
+		fprintf (stderr, "ERROR:  Vector orientations do not match\n");
+		return DIMENSION_ERROR;
+	}
 
 	res = cblas_ddot (v1->size, v1->vect, 1, v2->vect, 1);
 	return res;
