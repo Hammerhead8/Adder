@@ -109,5 +109,6 @@ int randMatrix (adder_matrix *m);
 
 /* Other matrix functions */
 adder_matrix * matrixTranspose (adder_matrix *m);
+adder_complex_matrix * complexMatrixTranspose (adder_complex_matrix *m);
 
 #endif

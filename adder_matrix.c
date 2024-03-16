@@ -776,3 +776,27 @@ matrixTranspose (adder_matrix *m)
 
 	return T;
 }
+
+/* Transpose a complex-valued matrix in rectangular form */
+adder_complex_matrix *
+complexMatrixTranspose (adder_complex_matrix *m)
+{
+	adder_complex_matrix *Z;
+	int i, j;
+	
+	Z = complexMatrixInit2 (m->rows, m->columns);
+	if (Z == 0x00) {
+		fprintf (stderr, "Failed to transpose matrix\n");
+		return NULL;
+	}
+	
+	/* Perform the transposition */
+	for (i = 0; i < m->rows; i++) {
+		for (j = 0; j < m->columns; j++) {
+			Z->mat[j * m->rows + i].real = m->mat[j * m->rows + i].real;
+			Z->mat[j * m->rows + i].imag = m->mat[j  *m->rows + i].imag;
+		}
+	}
+	
+	return T;
+}
