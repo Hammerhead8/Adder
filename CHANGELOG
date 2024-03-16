@@ -1,5 +1,6 @@
 Changes since last release
 
-* Changed blas header file from openblas-cblas.h to cblas.h
-* Added ability to specify upper and lower bounds for random matrices and
-vectors
+* Implemented exponential and power curve fitting using least squares method
+* Implemented dot product
+* Implemented complex-value matrix transpose
+* Implemented Monte Carlo integration using Xorshift RNG

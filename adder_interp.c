@@ -58,7 +58,6 @@ polynomialInterp (double *result, int n, double *x0, double *y0, double x2)
 	for (i = 0; i < n; i++) {
 		for (j = 0; j < n; j++) {
 			m->mat[i * n + j] = pow (x0[i], n - j - 1);
-//			m->mat[i * n + j] = pow (x0[i], j);
 		}
 
 		b->vect[i] = y0[i];
