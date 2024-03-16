@@ -81,7 +81,6 @@ int randVector (adder_vector *v);
 void vectorTranspose (adder_vector *v);
 void complexVectorTranspose (adder_complex_vector *z);
 int dotProduct (adder_vector *v1, adder_vector *v2, double *res);
-int crossProduct (adder_vector *v1, adder_vector *v2, adder_vector *res);
 void normalizeVector (adder_vector *V, adder_vector *vNorm);
 
 /* Matrix IO functions */
