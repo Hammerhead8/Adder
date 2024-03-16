@@ -2,5 +2,4 @@ Changes since last release
 
 * Implemented exponential and power curve fitting using least squares method
 * Implemented dot product
-* Implemented complex-value matrix transpose
-* Implemented Monte Carlo integration using Xorshift RNG
+* Implemented complex-value vectors and matrices
