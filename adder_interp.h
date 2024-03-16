@@ -8,5 +8,6 @@
 
 double linearInterp (double *x, double *y, double x2);
 int polynomialInterp (double *result, int n, double *x0, double *y0, double x2);
+int polynomialInterpFunction (double *coefficients, int n, double *x0, double *y0);
 
 #endif
