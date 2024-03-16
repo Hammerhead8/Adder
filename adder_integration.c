@@ -323,7 +323,8 @@ simpsonIntegrate (adder_function *f, double a, double b, int N)
 	return res;
 }
 
-/* Monte Carlo integration */
+/* Monte Carlo integration. /dev/urandom is used as a random seed with system time used
+ * as a fallback in case reading fails. The generator used is Xorshift. */
 double
 monteCarloIntegrate (adder_function *f, double a, double b, long unsigned int N)
 {
@@ -346,6 +347,7 @@ monteCarloIntegrate (adder_function *f, double a, double b, long unsigned int N)
 
 		/* If reading failed then fall back to using the system time */
 		if (err == 0) {
+			fclose (fp);
 			v = time (NULL);
 		}
 
@@ -364,7 +366,7 @@ monteCarloIntegrate (adder_function *f, double a, double b, long unsigned int N)
 	mul2 = a - 0 * ((a - b) / (0 - 1));
 
 	for (i = 0; i < N; i++) {
-		/* Generate a number between 0 and 1 using the Xorshoft generator */
+		/* Generate a number between 0 and 1 using the Xorshift generator */
 		v = xorshift (v);
 		x = (double)v / (double)0xffffffffffffffff;
 		x = x * mul1 + mul2;
@@ -391,4 +393,6 @@ xorshift (long unsigned int y)
 	y ^= (y << 13);
 	y ^= (y >> 17);
 	y ^= (y << 5);
+	
+	return y;
 }
