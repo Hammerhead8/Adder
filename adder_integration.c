@@ -344,18 +344,20 @@ monteCarloIntegrate (adder_function *f, double a, double b, long unsigned int N)
 	/* If fopen succeeded then read from /dev/urandom */
 	if (err == 0) {
 		err = fread (&v, sizeof (long unsigned int), 1, fp);
-		
+
 		/* If reading failed then fall back to using the system time */
 		if (err == 0) {
 			fclose (fp);
 			v = time (NULL);
 		}
-		
+
 		fclose (fp);
 	}
-	
+
 	/* Otherwise use the system time as the seed */
 	else {
+		fclose (fp);
+
 		v = time (NULL);
 	}
 
