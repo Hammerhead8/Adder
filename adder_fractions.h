@@ -10,6 +10,7 @@ typedef struct
 
 /* IO functions */
 adder_fraction * newFraction (long int numerator, long int denominator);
+adder_fraction * newFractionFromString (unsigned char *num);
 void deleteFraction (adder_fraction *f);
 void printFraction (adder_fraction *f);
 void setNumerator (adder_fraction *f, long int numerator);

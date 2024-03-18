@@ -33,6 +33,72 @@ newFraction (long int numerator, long int denominator)
 	return f;
 }
 
+/* Create a fraction from a decimal number given as a string */
+adder_fraction *
+newFractionFromString (unsigned char *num)
+{
+	adder_fraction *f;
+	long unsigned int len;
+	long int integerPart = 0;
+	long int fractionPart = 0;
+	unsigned int startIndex;
+	unsigned int decimalIndex;
+	int sign;
+	long unsigned int i;
+
+	f = malloc (sizeof (adder_fraction));
+	if (f == NULL) {
+		fprintf (stderr, "Failed to create fraction.\n");
+		return NULL;
+	}
+
+	/* Convert from decimal to fraction */
+	/* Start by calculating the length of the string */
+	len = strlen (num);
+	
+	/* Parse the string. */
+
+	/* If the first character is '-' then the number is negative */
+	if (num[0] == 0x2D) {
+		sign = -1;
+		startIndex = 1;
+	}
+	
+	else {
+		sign = 1;
+		startIndex = 0;
+	}
+	
+	/* Find the decimal point in the number */
+	for (i = 0; i < len; i++) {
+		if (num[i] == 0x2E) {
+			decimalIndex = i;
+			break;
+		}
+	}
+	
+	/* Now combine the integer part of the number */
+	if (startIndex < decimalIndex) {
+		for (i = startIndex; i < decimalIndex; i++) {
+			integerPart += (num[i] - 0x30) * pow (10, decimalIndex - i - 1);
+		}
+	
+		integerPart *= sign;
+	}
+	
+	/* Now combine the fractional part of the number */
+	for (i = decimalIndex + 1; i < len; i++) {
+		fractionPart += (num[i] - 0x30) * pow (10, len - i);
+	}
+	
+	/* Calculate the numerator and denominator of the number */
+	f->denom = pow (10, len - decimalIndex);
+	
+	f->numer = (f->denom * integerPart) + fractionPart;
+	
+	return f;
+}
+
 /* Deallocate the memory for the fraction */
 void
 deleteFraction (adder_fraction *f)
