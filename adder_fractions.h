@@ -11,7 +11,7 @@ typedef struct
 /* IO functions */
 adder_fraction * newFraction (long int numerator, long int denominator);
 void deleteFraction (adder_fraction *f);
-void print (adder_fraction *f);
+void printFraction (adder_fraction *f);
 void setNumerator (adder_fraction *f, long int numerator);
 void setDenominator (adder_fraction *f, long int denominator);
 long int getNumerator (adder_fraction *f);
