@@ -20,11 +20,18 @@ newFraction (long int numerator, long int denominator)
 		return f;
 	}
 
+	/* Check if the denominator is zero and return an error if it is */
+	if (denominator == 0) {
+		fprintf (stderr, "ERROR:  Denominator cannot be zero\n");
+		return NULL;
+	}
+
 	/* Set the numerator and denominator values */
-	if (denominator < 0) {
+	else if (denominator < 0) {
 		f->numer = -1 * numerator;
 		f->denom = -1 * denominator;
 	}
+	
 	else {
 		f->numer = numerator;
 		f->denom = denominator;
