@@ -269,7 +269,7 @@ addRect (adder_complex_rect *sum, adder_complex_rect *n1, adder_complex_rect *n2
 void
 subRect (adder_complex_rect *diff, adder_complex_rect *n1, adder_complex_rect *n2)
 {
-	diff->real = n1->real - n1->real;
+	diff->real = n1->real - n2->real;
 	diff->imag = n1->imag - n2->imag;
 }
 
@@ -414,8 +414,8 @@ addPolar (adder_complex_polar *sum, adder_complex_polar *num1, adder_complex_pol
 	i2 = imagPolar (num2);
 
 	/* Perform the addition */
-	r = r1 - r2;
-	i = i1 - i2;
+	r = r1 + r2;
+	i = i1 + i2;
 	setReal (res, r);
 	setImag (res, i);
 
