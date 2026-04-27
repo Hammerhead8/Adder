@@ -2,6 +2,7 @@
  * Function definitions for the root finding algorithms */
 #include <math.h> /* For fabs */
 #include "adder_roots.h"
+#include "adder_differentiate.h"
 
 /* Non-derivative methods */
 
@@ -155,7 +156,7 @@ steffensen (adder_function *f, double guess, double tol, unsigned int iterLimit)
  * iterLimit is the maximum number of iterations
  */
 double
-newton (adder_function *f, adder_function *df, double guess, double tol, unsigned int iterLimit)
+newton (adder_function *f, double guess, double h, double tol, unsigned int iterLimit)
 {
 	double xn;
 	double xn1;
@@ -168,7 +169,7 @@ newton (adder_function *f, adder_function *df, double guess, double tol, unsigne
 	/* The algorithm */
 	for (i = 0; i < iterLimit; i++) {
 		fxn = f->function (xn);
-		dfxn = df->function (xn);
+		dfxn = derivSymDiff (f, xn, h);
 
 		/* Definition of Newton's Method */
 		xn1 = xn - fxn / dfxn;
@@ -199,7 +200,7 @@ newton (adder_function *f, adder_function *df, double guess, double tol, unsigne
 
 /* Halley's Method */
 double
-halley (adder_function *f, adder_function *df, adder_function *ddf, double guess, double tol, unsigned int iterLimit)
+halley (adder_function *f, double guess, double h, double tol, unsigned int iterLimit)
 {
 	double zn;
 	double fzn;
@@ -213,8 +214,8 @@ halley (adder_function *f, adder_function *df, adder_function *ddf, double guess
 	for (i = 0; i < iterLimit; i++) {
 		/* Calculate the values of the function and its derivatives at zn */
 		fzn = f->function (zn);
-		dfzn = df->function (zn);
-		ddfzn = ddf->function (zn);
+		dfzn = derivSymDiff (f, zn, h);
+		ddfzn = derivSecondSymDiff (f, zn, h);
 
 		znPlusOne = zn - (fzn / (dfzn - (ddfzn * fzn) / (2 * dfzn)));
 

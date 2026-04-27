@@ -13,8 +13,8 @@ double regulaFalsi (adder_function *f, double leftGuess, double rightGuess, doub
 double steffensen (adder_function *f, double guess, double tol, unsigned int iterLimit);
 
 /* Methods with derivatives */
-double newton (adder_function *f, adder_function *df, double guess, double tol, unsigned int iterLimit);
-double halley (adder_function *f, adder_function *df, adder_function *ddf, double guess, double tol, unsigned int iterLimit);
+double newton (adder_function *f, double guess, double h, double tol, unsigned int iterLimit);
+double halley (adder_function *f, double guess, double h, double tol, unsigned int iterLimit);
 
 /* Other functions */
 int sign (double x, double y);
