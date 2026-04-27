@@ -122,3 +122,22 @@ derivBackward (adder_function *f, double x, double h)
 
 	return dx;
 }
+
+/* Second order methods */
+
+double
+derivSecondSymDiff (adder_function *f, double x, double h)
+{
+	double fPositive;
+	double fNegative;
+	double fx;
+	double ddf;
+	
+	fPositive = f->function (x + h);
+	fNegative = f->function (x - h);
+	fx = f->function (x);
+	
+	ddf = (fPositive + fNegative - 2 * fx) / (h * h);
+	
+	return ddf;
+}

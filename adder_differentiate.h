@@ -12,4 +12,7 @@ double derivCenter (adder_function *f, double x, double h);
 double derivForward (adder_function *f, double x, double h);
 double derivBackward (adder_function *f, double x, double h);
 
+/* Second order methods */
+double derivSecondSymDiff (adder_function *f, double x, double h);
+
 #endif
