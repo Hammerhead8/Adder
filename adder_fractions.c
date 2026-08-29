@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h> /* For malloc and free */
 #include <math.h> /* For pow */
+#include <string.h> /* For strlen */
 #include "adder_fractions.h"
 
 /******************
@@ -31,6 +32,133 @@ newFraction (long int numerator, long int denominator)
 	}
 
 	return f;
+}
+
+adder_fraction *
+newFractionFromDecimal (const unsigned char *decimal)
+{
+	adder_fraction *f;
+	long long int decimalLen;
+	long long int decimalPointIdx;
+	long long int powTen;
+	long long int i;
+	int decimalFound = 0; /* Used for checking if multiple decimal points are present in the string */
+	
+	f = malloc (sizeof (adder_fraction));
+	if (f == NULL) {
+		return NULL;
+	}
+	
+	decimalLen = strlen (decimal);
+	
+	/* First search the string to find the location of the decimal point */
+	for (i = 0; i < decimalLen; i++) {
+		if (decimal[i] == 0x2E) {
+			decimalPointIdx = i;
+			break;
+		}
+	}
+	
+	/* If there is no decimal point then the string is an integer so we can immediately
+	 * calculate the fraction and return it */
+	if (i == decimalLen) {
+		powTen = 0;
+		f->numer = 0;
+		f->denom = 1;
+		
+		for (i = decimalLen - 1; i > 0; i--) {
+			if ((decimal[i] < 0x30) || (decimal[i] > 0x39)) {
+				deleteFraction (f);
+				return NULL;
+			}
+			
+			f->numer += (decimal[i] - 0x30) * pow (10, powTen);
+			powTen++;
+		}
+		
+		/* If the first character is a negative sign then
+		 * multiply the numerator by -1 */
+		if (decimal[0] == 0x2D) {
+			f->numer *= -1;
+		}
+		
+		else if ((decimal[0] >= 0x30) && (decimal[0] <= 0x39)) {
+			f->numer += (decimal[0] - 0x30) * pow (10, powTen);
+		}
+		
+		return f;
+	}
+	
+	/* Otherwise we need to find where in the string the decimal point
+	 * is located and calculate the integer and fraction parts of the
+	 * number using those values */
+	else if (decimalPointIdx == 0) {
+		powTen = 0;
+		f->numer = 0;
+		f->denom = 1;
+		
+		for (i = 1; i < decimalLen; i++) {
+			f->numer += (decimal[i] - 0x30) * pow (10, powTen);
+			f->denom *= 10;
+			powTen++;
+		}
+		
+		return f;
+	}
+	
+	else {
+		powTen = 0;
+		f->numer = 0;
+		f->denom = 1;
+		
+		for (i = decimalLen - 1; i > 0; i--) {
+			/* Skip the decimal point */
+			if (decimal[i] == 0x2E) {
+				if (!decimalFound) {
+					decimalFound = 1;
+					continue;
+				}
+				
+				else {
+					fprintf (stderr, "Invalid decimal string\n");
+					deleteFraction (f);
+					return NULL;
+				}
+			}
+			
+			else if ((decimal[i] < 0x30) || (decimal[i] > 0x39)) {
+				fprintf (stderr, "Invalid decimal string\n");
+				deleteFraction (f);
+				return NULL;
+			}
+			
+			f->numer += (decimal[i] - 0x30) * pow (10, powTen);
+			
+			if (i > decimalPointIdx) {
+				f->denom *= 10;
+			}
+			
+			powTen++;
+		}
+		
+		/* If the first character is a negative sign then
+		 * multiply the numerator by -1 */
+		if (decimal[0] == 0x2D) {
+			f->numer *= -1;
+		}
+		
+		else if ((decimal[0] >= 0x30) && (decimal[0] <= 0x39)) {
+			f->numer += (decimal[0] - 0x30) * pow (10, powTen);
+		}
+		
+		else {
+			fprintf (stderr, "Invalid decimal string\n");
+			deleteFraction (f);
+			return NULL;
+		}
+		
+		return f;
+	}
 }
 
 /* Deallocate the memory for the fraction */
